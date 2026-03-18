@@ -1,2 +1,89 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
+}
+
+@layer base {
+  :root {
+    --background: #F2F2EB;
+    --foreground: #0C0C0C;
+    --primary: #00605A;
+    /* Figma primary base, will use #15803d if forced for green */
+    --primary-hover: #004d48;
+    --secondary: #D9665C;
+    /* Rose highlight from Figma */
+    --card: #ffffff;
+    --border: #000000;
+    /* Sharp black borders for Neo-Brutalism */
+    --muted: #E5E5DF;
+  }
+
+  .dark {
+    --background: #0C0C0C;
+    --foreground: #ffffff;
+    --primary: #00F5E1;
+    /* Neon Cyan from Figma dark mode */
+    --primary-hover: #00DFCC;
+    --secondary: #D9A65C;
+    /* Gold/yellow highlight from Figma dark mode */
+    --card: #1A1A1A;
+    --border: #ffffff;
+    /* Sharp white borders */
+    --muted: #2A2A2A;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    /* Removing subtle grid pattern to match Figma neo-brutalism flat bg */
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+    font-style: italic;
+    /* Figma heading are always italicized DM Serif Display */
+  }
+}
+
+/* Neo-Brutalism Utilities */
+@layer utilities {
+  .neo-shadow {
+    box-shadow: 8px 8px 0px 0px var(--border);
+  }
+
+  .neo-shadow-sm {
+    box-shadow: 4px 4px 0px 0px var(--border);
+  }
+
+  .neo-border {
+    border: 2px solid var(--border);
+  }
+
+  .neo-border-sm {
+    border: 1px solid var(--border);
+  }
+
+  .neo-radius {
+    border-radius: 0px;
+    /* Force sharp corners */
+  }
+}

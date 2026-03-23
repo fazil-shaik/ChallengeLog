@@ -17,6 +17,7 @@
     "drizzle-orm": "^0.45.1",
     "neondb": "^0.8.2",
     "next": "16.1.7",
+    "next-auth": "^4.24.13",
     "next-themes": "^0.4.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"

@@ -4,6 +4,10 @@ import React from "react";
 
 
 export default function SignUpPage() {
+  const HanldeGoogleAuth = (event: React.MouseEvent<HTMLButtonElement>)=>{
+      
+
+  }
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-10">
@@ -63,7 +67,7 @@ export default function SignUpPage() {
         </div>
 
         {/* Google */}
-        <button className="w-full flex items-center justify-center gap-2.5 py-2.5 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
+        <button className="w-full flex items-center justify-center gap-2.5 py-2.5 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors" onClick={HanldeGoogleAuth}> 
           {/* paste Google SVG icon here */}
           Continue with Google
         </button>

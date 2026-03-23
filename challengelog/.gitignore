@@ -10,6 +10,8 @@
 !.yarn/releases
 !.yarn/versions
 
+
+.drizzle
 # testing
 /coverage
 # next.js
@@ -17,6 +19,7 @@
 /out/
 .env
 .env.local
+
 
 # production
 /build

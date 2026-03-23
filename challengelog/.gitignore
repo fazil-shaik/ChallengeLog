@@ -11,7 +11,7 @@
 !.yarn/versions
 
 
-.drizzle
+drizzle/*
 # testing
 /coverage
 # next.js

@@ -19,8 +19,6 @@ export const metadata: Metadata = {
   description: "Stop giving away your work for free. Track every change order. Protect your scope. Get paid for every revision.",
 };
 
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 export default function RootLayout({
@@ -30,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${spaceGrotesk.variable} ${dmSerif.variable} antialiased min-h-screen flex flex-col pt-[88px]`}>
+      <body className={`${spaceGrotesk.variable} ${dmSerif.variable} antialiased min-h-screen flex flex-col`}>
         <SessionProviderWrapper>
           <ThemeProvider
             attribute="class"
@@ -38,11 +36,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar />
             <main className="flex-grow">
               {children}
             </main>
-            <Footer />
           </ThemeProvider>
         </SessionProviderWrapper>
       </body>

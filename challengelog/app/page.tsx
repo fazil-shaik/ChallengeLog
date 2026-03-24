@@ -1,12 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
+      <Navbar />
+      <div className="flex flex-col min-h-screen">
 
-      {/* Hero Section */}
-      <section className="relative pt-[140px] pb-[100px] lg:pt-[180px] lg:pb-[140px] overflow-hidden bg-background">
+        {/* Hero Section */}
+        <section className="relative pt-[140px] pb-[100px] lg:pt-[180px] lg:pb-[140px] overflow-hidden bg-background">
         <div className="max-w-[1400px] mx-auto px-6 sm:px-8 relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
 
@@ -518,7 +522,8 @@ export default function Home() {
         <div className="absolute top-0 right-0 w-64 h-64 border-l-2 border-b-2 border-border/20 -translate-y-1/2 translate-x-1/2 rotate-45 pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 border-t-2 border-r-2 border-border/20 translate-y-1/2 -translate-x-1/2 rotate-12 pointer-events-none"></div>
       </section>
-
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 }

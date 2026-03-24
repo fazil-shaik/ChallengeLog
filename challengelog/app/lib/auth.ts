@@ -3,19 +3,24 @@ import Google from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "../db/index";
-import { users } from "../(Schema)/schema";
+import { users, accounts, sessions, verificationTokens } from "../(Schema)/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export const authConfig: NextAuthOptions = {
-    adapter: DrizzleAdapter(db) as any,
+    adapter: DrizzleAdapter(db, {
+        usersTable: users as any,
+        accountsTable: accounts as any,
+        sessionsTable: sessions as any,
+        verificationTokensTable: verificationTokens as any,
+    }) as any,
     session: {
         strategy: "jwt",
     },
-    providers:[
+    providers: [
         Google({
-            clientId:process.env.GOOGLE_CLIENT_ID!,
-            clientSecret:process.env.GOOGLE_CLIENT_SECRET!
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!
         }),
         CredentialsProvider({
             name: "Credentials",

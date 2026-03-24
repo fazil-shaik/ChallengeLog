@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+    const pathname = usePathname();
+    if (pathname.startsWith('/dashboard')) return null;
+
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b-[1px] border-border/50">
             <div className="max-w-[1400px] mx-auto px-6 sm:px-8">

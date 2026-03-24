@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/app/lib/auth";
 import { db } from "@/app/db";
-import { projects, changeRequests } from "@/app/(Schema)/schema";
-import { eq, desc } from "drizzle-orm";
+import { projects, changeRequests, changeOrders } from "@/app/(Schema)/schema";
+import { eq, desc, inArray } from "drizzle-orm";
 
 export async function GET(
   req: Request,
@@ -37,7 +37,16 @@ export async function GET(
       orderBy: [desc(changeRequests.createdAt)],
     });
 
-    return NextResponse.json({ ...project, changeRequests: projectChangeRequests });
+    // Fetch related change orders
+    let projectChangeOrders: any[] = [];
+    if (projectChangeRequests.length > 0) {
+      projectChangeOrders = await db.query.changeOrders.findMany({
+        where: inArray(changeOrders.changeRequestId, projectChangeRequests.map(r => r.id)),
+        orderBy: [desc(changeOrders.createdAt)],
+      });
+    }
+
+    return NextResponse.json({ ...project, changeRequests: projectChangeRequests, changeOrders: projectChangeOrders });
   } catch (error) {
     console.error(error);
     return new NextResponse("Internal Error", { status: 500 });

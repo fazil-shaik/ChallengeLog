@@ -31,6 +31,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
     const { data: session } = useSession();
     const [project, setProject] = useState<any>(null);
     const [changeRequests, setChangeRequests] = useState<any[]>([]);
+    const [changeOrders, setChangeOrders] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -39,6 +40,14 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
     const [reqDescription, setReqDescription] = useState("");
     const [reqSource, setReqSource] = useState("email");
+
+    // Convert to Order Modal State
+    const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
+    const [selectedReqForOrder, setSelectedReqForOrder] = useState<any>(null);
+    const [orderHours, setOrderHours] = useState("");
+    const [orderCost, setOrderCost] = useState("");
+    const [orderNotes, setOrderNotes] = useState("");
+    const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
     // Filters & Sorting for Table
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
@@ -51,6 +60,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                     const data = await res.json();
                     setProject(data);
                     setChangeRequests(data.changeRequests || []);
+                    setChangeOrders(data.changeOrders || []);
                 }
             } catch (err) {
                 console.error("Failed to load project", err);
@@ -131,6 +141,48 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
         } catch (err) {
             setChangeRequests((prev) => prev.filter(req => req.id !== tempId));
             alert("Error analyzing request.");
+        }
+    };
+
+    const openConvertToOrderModal = (req: any) => {
+        setSelectedReqForOrder(req);
+        setOrderHours(req.aiHours?.toString() || "");
+        setOrderCost(req.aiCost?.toString() || "");
+        setOrderNotes(req.aiReasoning || "");
+        setIsConvertModalOpen(true);
+    };
+
+    const handleCreateOrder = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedReqForOrder) return;
+        setIsSubmittingOrder(true);
+
+        try {
+            const res = await fetch('/api/change-orders', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    changeRequestId: selectedReqForOrder.id,
+                    hours: orderHours,
+                    cost: orderCost,
+                    designerNotes: orderNotes,
+                    projectId: id,
+                })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setChangeOrders(prev => [data.changeOrder, ...prev]);
+                setChangeRequests(prev => prev.map(r => r.id === selectedReqForOrder.id ? { ...r, status: 'pending' } : r));
+                setIsConvertModalOpen(false);
+                alert("Change order created & sent for approval!");
+            } else {
+                alert("Failed to create change order.");
+            }
+        } catch (err) {
+            alert("Error creating order.");
+        } finally {
+            setIsSubmittingOrder(false);
         }
     };
 
@@ -319,6 +371,14 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                                                         <div className="bg-card border border-border px-3 py-1 text-[12px] font-bold font-mono">
                                                             <span className="text-foreground/50">$</span>{req.aiCost}
                                                         </div>
+                                                        {req.status === 'draft' && (
+                                                            <button 
+                                                                onClick={() => openConvertToOrderModal(req)}
+                                                                className="px-3 py-1 bg-primary text-background border border-primary text-[11px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors neo-shadow-sm hover:-translate-y-0.5 active:translate-y-0"
+                                                            >
+                                                                Convert
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}
@@ -352,13 +412,43 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                             </button>
                         </div>
 
-                        <div className="border-2 border-dashed border-border/50 bg-muted/20 p-16 text-center hover:bg-muted/40 transition-colors">
-                            <div className="w-16 h-16 border-2 border-border bg-card text-foreground/40 flex items-center justify-center mx-auto mb-6 neo-shadow-sm">
-                                <FileText size={24} strokeWidth={2} />
+                        {changeOrders.length > 0 ? (
+                            <div className="border-[1.5px] border-border bg-background divide-y-[1.5px] divide-border">
+                                {changeOrders.map((order) => (
+                                    <div key={order.id} className="p-5 flex items-center justify-between hover:bg-muted/10 transition-colors group">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 border ${
+                                                    order.status === 'approved' ? 'bg-primary/10 text-primary border-primary/30' :
+                                                    order.status === 'pending' ? 'bg-[#9b87f5]/10 text-[#9b87f5] border-[#9b87f5]/30' :
+                                                    'bg-muted text-foreground/60 border-border'
+                                                }`}>
+                                                    {order.status}
+                                                </span>
+                                                <span className="text-[12px] font-medium text-foreground/60">
+                                                    Order #{order.id.slice(-6).toUpperCase()}
+                                                </span>
+                                            </div>
+                                            <p className="text-[15px] font-bold mt-2 text-foreground group-hover:text-primary transition-colors">${order.cost} for {order.hours} hrs</p>
+                                        </div>
+                                        <Link
+                                            href={`/projects/${id}/orders/${order.id}`}
+                                            className="px-4 py-2 border-[1.5px] border-border text-[11px] font-bold uppercase tracking-widest hover:bg-muted transition-colors neo-shadow-sm shrink-0"
+                                        >
+                                            View
+                                        </Link>
+                                    </div>
+                                ))}
                             </div>
-                            <h3 className="text-[18px] font-bold text-foreground mb-3 tracking-wide">NO CHANGE ORDERS</h3>
-                            <p className="text-foreground/60 max-w-sm mx-auto text-[14px] leading-relaxed">When the client requests out-of-scope work, create a change order here for their approval.</p>
-                        </div>
+                        ) : (
+                            <div className="border-2 border-dashed border-border/50 bg-muted/20 p-16 text-center hover:bg-muted/40 transition-colors">
+                                <div className="w-16 h-16 border-2 border-border bg-card text-foreground/40 flex items-center justify-center mx-auto mb-6 neo-shadow-sm">
+                                    <FileText size={24} strokeWidth={2} />
+                                </div>
+                                <h3 className="text-[18px] font-bold text-foreground mb-3 tracking-wide">NO CHANGE ORDERS</h3>
+                                <p className="text-foreground/60 max-w-sm mx-auto text-[14px] leading-relaxed">When the client requests out-of-scope work, convert the request to a change order here for their approval.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -484,6 +574,103 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                                     className="px-6 py-3 bg-[#9b87f5] text-white border-[1.5px] border-border font-bold text-[12px] uppercase tracking-widest hover:bg-[#8b75f0] neo-shadow hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2"
                                 >
                                     <Wand2 size={16} /> ANALYZE REQUEST
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Convert to Order Modal */}
+            {isConvertModalOpen && selectedReqForOrder && (
+                <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-card w-full max-w-lg border-2 border-border neo-shadow flex flex-col max-h-[90vh]">
+                        <div className="border-b-2 border-border p-6 flex items-center justify-between bg-primary/5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-primary text-background flex items-center justify-center border-2 border-border neo-shadow-sm">
+                                    <FileText size={16} strokeWidth={2.5} />
+                                </div>
+                                <div>
+                                    <h3 className="text-[18px] font-serif font-bold italic text-foreground leading-none mb-1">Convert to Change Order</h3>
+                                    <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/50">Send Approval Email</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setIsConvertModalOpen(false)}
+                                className="text-foreground/50 hover:text-foreground hover:bg-muted p-2 border-[1.5px] border-transparent hover:border-border transition-all"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleCreateOrder} className="p-6 overflow-y-auto space-y-6">
+                            <div className="bg-muted/30 border border-border p-4 mb-2">
+                                <p className="text-[13px] text-foreground/80 line-clamp-3 italic">"{selectedReqForOrder.description}"</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[12px] font-bold uppercase tracking-widest text-foreground mb-2">
+                                        Estimated Hours
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="number"
+                                            step="0.5"
+                                            required
+                                            value={orderHours}
+                                            onChange={(e) => setOrderHours(e.target.value)}
+                                            className="w-full bg-background border-[1.5px] border-border p-3 pl-4 text-[14px] font-mono outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all neo-shadow-sm"
+                                        />
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-bold text-foreground/40">HRS</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-[12px] font-bold uppercase tracking-widest text-foreground mb-2">
+                                        Estimated Cost
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px] font-mono text-foreground/40">$</span>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            required
+                                            value={orderCost}
+                                            onChange={(e) => setOrderCost(e.target.value)}
+                                            className="w-full bg-background border-[1.5px] border-border p-3 pl-8 text-[14px] font-mono outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all neo-shadow-sm"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[12px] font-bold uppercase tracking-widest text-foreground mb-2">
+                                    Designer Notes for Client
+                                </label>
+                                <textarea
+                                    rows={4}
+                                    placeholder="Explain the scope of this change..."
+                                    value={orderNotes}
+                                    onChange={(e) => setOrderNotes(e.target.value)}
+                                    className="w-full bg-background border-[1.5px] border-border p-4 text-[14px] outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none neo-shadow-sm"
+                                />
+                            </div>
+
+                            <div className="pt-4 border-t border-border flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsConvertModalOpen(false)}
+                                    className="px-5 py-3 border-[1.5px] border-border font-bold text-[12px] uppercase tracking-widest hover:bg-muted transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmittingOrder}
+                                    className="px-6 py-3 bg-primary text-background border-[1.5px] border-border font-bold text-[12px] uppercase tracking-widest hover:bg-primary/90 neo-shadow hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    {isSubmittingOrder ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
+                                    {isSubmittingOrder ? 'SENDING...' : 'SEND APPROVAL & CREATE'}
                                 </button>
                             </div>
                         </form>

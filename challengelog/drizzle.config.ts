@@ -7,7 +7,7 @@ dotenv.config()
 // Retrieved 2026-03-23, License - CC BY-SA 4.0
 
 export default defineConfig({
-    schema: './app/(Schema)',
+    schema: './app/(Schema)/schema.ts',
 
     dbCredentials: {
         url: process.env.DATABASE_URL!

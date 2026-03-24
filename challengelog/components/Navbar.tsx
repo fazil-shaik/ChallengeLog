@@ -3,9 +3,11 @@
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function Navbar() {
     const pathname = usePathname();
+    const { data: session } = useSession();
     if (pathname.startsWith('/dashboard')) return null;
 
     return (
@@ -39,12 +41,20 @@ export default function Navbar() {
                     {/* Actions - Right */}
                     <div className="flex items-center space-x-5 pl-6">
                         <ThemeToggle />
-                        <Link href="/signin" className="hidden md:inline-flex text-[13px] font-semibold tracking-wide text-foreground border-[1.5px] border-border px-6 py-2.5 rounded hover:bg-muted transition-colors uppercase">
-                            SIGN IN
-                        </Link>
-                        <Link href="/signup" className="text-[13px] font-semibold tracking-wide text-background bg-primary px-7 py-2.5 rounded hover:bg-primary-hover transition-colors uppercase">
-                            START FREE
-                        </Link>
+                        {session ? (
+                            <Link href="/dashboard" className="text-[13px] font-semibold tracking-wide text-background bg-primary px-7 py-2.5 rounded hover:bg-primary-hover transition-colors uppercase neo-shadow-sm border-2 border-border">
+                                DASHBOARD
+                            </Link>
+                        ) : (
+                            <>
+                                <Link href="/signin" className="hidden md:inline-flex text-[13px] font-semibold tracking-wide text-foreground border-[1.5px] border-border px-6 py-2.5 rounded hover:bg-muted transition-colors uppercase">
+                                    SIGN IN
+                                </Link>
+                                <Link href="/signup" className="text-[13px] font-semibold tracking-wide text-background bg-primary px-7 py-2.5 rounded hover:bg-primary-hover transition-colors uppercase">
+                                    START FREE
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

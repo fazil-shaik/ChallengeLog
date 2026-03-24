@@ -18,6 +18,7 @@ import {
     Plus
 } from "lucide-react";
 import { format } from "date-fns";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -169,7 +170,8 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                         </div>
                     </div>
                     
-                    <div className="shrink-0 w-full md:w-auto">
+                    <div className="shrink-0 w-full md:w-auto flex items-center justify-end gap-6">
+                        <ThemeToggle />
                         <div className="bg-primary text-background border-2 border-border px-8 py-5 neo-shadow relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-background/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700"></div>
                             <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5 relative z-10 text-background/80">PROJECT VALUE</p>

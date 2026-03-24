@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Briefcase, Clock, CheckCircle2, CircleDashed, Users, FileText, IndianRupee } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Dashboard() {
     const { data: session } = useSession();
@@ -68,6 +69,7 @@ export default function Dashboard() {
                         )}
                     </div>
                     <div className="flex items-center gap-4">
+                        <ThemeToggle />
                         <button
                             onClick={() => signOut({ callbackUrl: "/signin" })}
                             className="text-[12px] font-bold uppercase tracking-widest text-foreground/60 hover:text-secondary transition-colors px-3 py-2"

@@ -2,8 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { getServerSession } from "next-auth";
+import { authConfig } from "@/app/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authConfig);
   return (
     <>
       <Navbar />
@@ -41,12 +44,20 @@ export default function Home() {
 
               {/* Primary Actions */}
               <div className="flex flex-col sm:flex-row items-center gap-4 mb-16">
-                <Link href="/signup" className="w-full sm:w-auto px-10 py-4 lg:py-4.5 bg-primary text-background text-[14px] font-bold tracking-wide uppercase hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all text-center rounded-[4px]">
-                  START FREE TRIAL
-                </Link>
-                <Link href="/demo" className="w-full sm:w-auto px-10 py-4 lg:py-4.5 bg-transparent text-foreground border-[1.5px] border-border text-[14px] font-bold tracking-wide uppercase hover:bg-muted transition-all text-center rounded-[4px]">
-                  WATCH DEMO
-                </Link>
+                {session ? (
+                  <Link href="/dashboard" className="w-full sm:w-auto px-10 py-4 lg:py-4.5 bg-primary text-background text-[14px] font-bold tracking-wide uppercase hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all text-center rounded-[4px] border-2 border-border neo-shadow">
+                    GO TO DASHBOARD
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/signup" className="w-full sm:w-auto px-10 py-4 lg:py-4.5 bg-primary text-background text-[14px] font-bold tracking-wide uppercase hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all text-center rounded-[4px] border-2 border-border neo-shadow">
+                      START FREE TRIAL
+                    </Link>
+                    <Link href="/demo" className="w-full sm:w-auto px-10 py-4 lg:py-4.5 bg-transparent text-foreground border-[1.5px] border-border text-[14px] font-bold tracking-wide uppercase hover:bg-muted transition-all text-center rounded-[4px]">
+                      WATCH DEMO
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Metrics Bar */}

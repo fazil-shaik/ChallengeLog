@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, ChevronRight, ChevronLeft, Check, FileText, IndianRupee } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function NewProject() {
   const router = useRouter();
@@ -127,7 +128,10 @@ export default function NewProject() {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center py-16 px-6 selection:bg-secondary/30">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center py-16 px-6 selection:bg-secondary/30 relative">
+      <div className="absolute top-6 right-6 lg:top-8 lg:right-10">
+        <ThemeToggle />
+      </div>
       
       <div className="w-full max-w-2xl text-center mb-10">
         <div className="text-[12px] font-bold text-primary tracking-widest uppercase mb-4 flex items-center justify-center gap-4">

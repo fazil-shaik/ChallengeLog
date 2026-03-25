@@ -44,7 +44,7 @@ export const ChangeOrderDiscussEmail = ({
             </Text>
 
             <Text className="text-black text-[14px] leading-[24px] mt-4">
-              Please reach out to the client to answer any questions or clarify the scope. The status remains 'pending'.
+              Please reach out to the client to answer any questions or clarify the scope. The status remains &apos;pending&apos;.
             </Text>
 
             <Section className="text-center mt-[32px] mb-[32px]">

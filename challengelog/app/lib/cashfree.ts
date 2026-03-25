@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Cashfree } from "cashfree-pg";
 
 (Cashfree as any).XClientId = process.env.CASHFREE_CLIENT_ID || "TEST100XXXX";

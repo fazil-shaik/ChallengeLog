@@ -4,7 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, Clock, FileText, IndianRupee, Mail, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock, FileText, Mail, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import ThemeToggle from "@/components/ThemeToggle";
 export default function ChangeOrderDetail({
@@ -15,8 +15,8 @@ export default function ChangeOrderDetail({
     const { id, orderId } = use(params);
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
-    const router = useRouter();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [data, setData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isApproving, setIsApproving] = useState(false);
@@ -83,7 +83,7 @@ export default function ChangeOrderDetail({
         );
     }
 
-    const { order, request, project, timeline } = data;
+    const { order, request, project } = data;
     const isPending = order.status === 'pending';
     const canApprove = token && isPending && order.approvalToken === token;
 

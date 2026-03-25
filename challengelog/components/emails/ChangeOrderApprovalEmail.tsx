@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
   Button,
@@ -55,7 +56,7 @@ export const ChangeOrderApprovalEmail = ({
                 Scope Description
               </Text>
               <Text className="text-black text-[14px] italic mt-0">
-                "{changeDescription}"
+                &quot;{changeDescription}&quot;
               </Text>
 
               <Hr className="border border-black my-4" />

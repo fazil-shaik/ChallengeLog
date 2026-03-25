@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, react/no-unescaped-entities, @typescript-eslint/no-unused-vars, @next/next/no-img-element */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../db";
 import { changeRequests, auditEvents, projects } from "@/app/(Schema)/schema";

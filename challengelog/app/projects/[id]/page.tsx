@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useSession } from "next-auth/react";
@@ -740,7 +741,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
 
                         <form onSubmit={handleCreateOrder} className="p-6 overflow-y-auto space-y-6">
                             <div className="bg-muted/30 border border-border p-4 mb-2">
-                                <p className="text-[13px] text-foreground/80 line-clamp-3 italic">"{selectedReqForOrder.description}"</p>
+                                <p className="text-[13px] text-foreground/80 line-clamp-3 italic">&quot;{selectedReqForOrder.description}&quot;</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">

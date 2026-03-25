@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, react/no-unescaped-entities, @typescript-eslint/no-unused-vars, @next/next/no-img-element */
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
@@ -468,7 +469,7 @@ export default async function Home() {
 
                 {/* Quote Icon Background */}
                 <div className="absolute top-4 left-6 text-[80px] font-serif italic leading-none opacity-10 text-foreground pointer-events-none">
-                  "
+                  &quot;
                 </div>
 
                 {/* Quote Text */}

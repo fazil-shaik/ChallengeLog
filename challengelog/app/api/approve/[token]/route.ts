@@ -82,7 +82,7 @@ export async function POST(
       const orderLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/projects/${project.id}/orders/${order.id}`;
       
       await resend.emails.send({
-        from: "Challengelog <updates@updates.challengelog.com>", // Use a domain if verified, otherwise might fail in testing without sandbox
+        from: "onboarding@resend.dev", // Use onboarding domain to ensure delivery in test mode
         to: [designer.email],
         subject: `Approved: Change Order for ${project.clientName}`,
         react: ChangeOrderApprovedEmail({

@@ -52,9 +52,9 @@ export async function POST(
     // Send email to designer requesting discussion
     if (designer.email) {
       const orderLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/projects/${project.id}/orders/${order.id}`;
-      
+
       await resend.emails.send({
-        from: "Challengelog <updates@updates.challengelog.com>", 
+        from: "onboarding@resend.dev",
         to: [designer.email],
         subject: `Discussion Requested: Change Order for ${project.clientName}`,
         react: ChangeOrderDiscussEmail({

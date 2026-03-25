@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, ChevronRight, ChevronLeft, Check, FileText, IndianRupee } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import { toast } from "sonner";
 
 export default function NewProject() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function NewProject() {
     briefText: "",
     originalValue: "",
   });
-  
+
   const [file, setFile] = useState<File | null>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [fileData, setFileData] = useState<{ url: string; fileId: string } | null>(null);
@@ -27,10 +28,10 @@ export default function NewProject() {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
       setUploadingFile(true);
-      
+
       const payload = new FormData();
       payload.append("file", selectedFile);
-      
+
       try {
         const res = await fetch("/api/upload", {
           method: "POST",
@@ -53,10 +54,10 @@ export default function NewProject() {
       const selectedFile = e.dataTransfer.files[0];
       setFile(selectedFile);
       setUploadingFile(true);
-      
+
       const payload = new FormData();
       payload.append("file", selectedFile);
-      
+
       try {
         const res = await fetch("/api/upload", {
           method: "POST",
@@ -64,7 +65,7 @@ export default function NewProject() {
         });
         const data = await res.json();
         if (data.url) {
-            setFileData({ url: data.url, fileId: data.fileId });
+          setFileData({ url: data.url, fileId: data.fileId });
         }
       } catch (err) {
         console.error("Upload failed", err);
@@ -91,11 +92,15 @@ export default function NewProject() {
       });
       if (res.ok) {
         const project = await res.json();
+        toast.success("Project created successfully!");
         router.push(`/projects/${project.id}`);
       } else {
-        console.error("Failed to create project");
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error || "Failed to create project");
+        console.error("Failed to create project:", data);
       }
     } catch (err) {
+      toast.error("An unexpected error occurred");
       console.error(err);
     } finally {
       setIsSubmitting(false);
@@ -107,19 +112,17 @@ export default function NewProject() {
       {[1, 2, 3].map((num) => (
         <div key={num} className="flex items-center">
           <div
-            className={`flex items-center justify-center w-10 h-10 border-2 transition-all duration-300 ${
-              step >= num
+            className={`flex items-center justify-center w-10 h-10 border-2 transition-all duration-300 ${step >= num
                 ? "bg-primary border-border text-background font-bold neo-shadow-sm"
                 : "bg-muted border-border/50 text-foreground/50 font-bold"
-            }`}
+              }`}
           >
             {step > num ? <Check size={18} strokeWidth={3} /> : num}
           </div>
           {num < 3 && (
             <div
-              className={`w-12 h-[2px] mx-2 transition-all duration-300 ${
-                step > num ? "bg-border" : "bg-border/20"
-              }`}
+              className={`w-12 h-[2px] mx-2 transition-all duration-300 ${step > num ? "bg-border" : "bg-border/20"
+                }`}
             />
           )}
         </div>
@@ -132,7 +135,7 @@ export default function NewProject() {
       <div className="absolute top-6 right-6 lg:top-8 lg:right-10">
         <ThemeToggle />
       </div>
-      
+
       <div className="w-full max-w-2xl text-center mb-10">
         <div className="text-[12px] font-bold text-primary tracking-widest uppercase mb-4 flex items-center justify-center gap-4">
           <div className="w-8 h-[2px] bg-primary"></div>
@@ -189,7 +192,7 @@ export default function NewProject() {
               <h2 className="text-[20px] font-bold uppercase tracking-wider flex items-center gap-3">
                 <div className="w-3 h-3 bg-secondary"></div> Project Brief
               </h2>
-              
+
               <div
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
@@ -202,7 +205,7 @@ export default function NewProject() {
                   accept=".pdf,.doc,.docx"
                 />
                 <div className="w-14 h-14 border-2 border-primary bg-background flex items-center justify-center mb-5 group-hover:-translate-y-1 transition-transform duration-300 neo-shadow-sm">
-                    <Upload className="text-primary" size={24} strokeWidth={2.5} />
+                  <Upload className="text-primary" size={24} strokeWidth={2.5} />
                 </div>
                 {uploadingFile ? (
                   <p className="text-[13px] font-bold tracking-widest uppercase text-foreground/70 animate-pulse">UPLOADING FILE...</p>
@@ -266,11 +269,10 @@ export default function NewProject() {
           <button
             onClick={handlePrev}
             disabled={step === 1}
-            className={`flex items-center gap-2 px-6 py-3.5 border-[1.5px] font-bold text-[12px] uppercase tracking-widest transition-all ${
-              step === 1 
-              ? "opacity-50 cursor-not-allowed border-border/20 text-foreground/30 bg-muted/30" 
-              : "border-border text-foreground bg-card hover:bg-muted neo-shadow-sm hover:-translate-y-0.5 active:translate-y-0"
-            }`}
+            className={`flex items-center gap-2 px-6 py-3.5 border-[1.5px] font-bold text-[12px] uppercase tracking-widest transition-all ${step === 1
+                ? "opacity-50 cursor-not-allowed border-border/20 text-foreground/30 bg-muted/30"
+                : "border-border text-foreground bg-card hover:bg-muted neo-shadow-sm hover:-translate-y-0.5 active:translate-y-0"
+              }`}
           >
             <ChevronLeft size={16} strokeWidth={3} /> BACK
           </button>
@@ -279,11 +281,10 @@ export default function NewProject() {
             <button
               onClick={handleNext}
               disabled={(step === 1 && (!formData.clientName || !formData.clientEmail))}
-              className={`flex items-center gap-2 px-8 py-3.5 border-[1.5px] font-bold text-[12px] uppercase tracking-widest transition-all ${
-                (step === 1 && (!formData.clientName || !formData.clientEmail))
-                ? "border-border/20 text-foreground/40 bg-muted/50 cursor-not-allowed"
-                : "border-border text-background bg-primary hover:bg-primary-hover neo-shadow hover:-translate-y-1 active:translate-y-0"
-              }`}
+              className={`flex items-center gap-2 px-8 py-3.5 border-[1.5px] font-bold text-[12px] uppercase tracking-widest transition-all ${(step === 1 && (!formData.clientName || !formData.clientEmail))
+                  ? "border-border/20 text-foreground/40 bg-muted/50 cursor-not-allowed"
+                  : "border-border text-background bg-primary hover:bg-primary-hover neo-shadow hover:-translate-y-1 active:translate-y-0"
+                }`}
             >
               CONTINUE <ChevronRight size={16} strokeWidth={3} />
             </button>
@@ -291,11 +292,10 @@ export default function NewProject() {
             <button
               onClick={handleSubmit}
               disabled={isSubmitting || !formData.originalValue}
-              className={`flex items-center gap-2 px-8 py-3.5 border-[1.5px] font-bold text-[12px] uppercase tracking-widest transition-all ${
-                isSubmitting || !formData.originalValue
-                ? "border-border/20 text-foreground/40 bg-muted/50 cursor-not-allowed"
-                : "border-border text-foreground bg-secondary hover:bg-[#D9665C]/90 dark:bg-secondary dark:hover:bg-[#C29352] dark:text-black neo-shadow hover:-translate-y-1 active:translate-y-0"
-              }`}
+              className={`flex items-center gap-2 px-8 py-3.5 border-[1.5px] font-bold text-[12px] uppercase tracking-widest transition-all ${isSubmitting || !formData.originalValue
+                  ? "border-border/20 text-foreground/40 bg-muted/50 cursor-not-allowed"
+                  : "border-border text-foreground bg-secondary hover:bg-[#D9665C]/90 dark:bg-secondary dark:hover:bg-[#C29352] dark:text-black neo-shadow hover:-translate-y-1 active:translate-y-0"
+                }`}
             >
               {isSubmitting ? (
                 <><div className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin" /> SAVING...</>

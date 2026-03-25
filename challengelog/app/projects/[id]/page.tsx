@@ -42,10 +42,10 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    // AI Request Modal State
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
     const [reqDescription, setReqDescription] = useState("");
     const [reqSource, setReqSource] = useState("email");
+    const [isAnalyzingReq, setIsAnalyzingReq] = useState(false);
 
     // Convert to Order Modal State
     const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
@@ -106,7 +106,8 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
 
     const handleLogRequest = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!reqDescription.trim()) return;
+        if (!reqDescription.trim() || isAnalyzingReq) return;
+        setIsAnalyzingReq(true);
 
         // Optimistic UI
         const tempId = `temp-${Date.now()}`;
@@ -149,6 +150,8 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
         } catch (err) {
             setChangeRequests((prev) => prev.filter(req => req.id !== tempId));
             toast.error("Error analyzing request.");
+        } finally {
+            setIsAnalyzingReq(false);
         }
     };
 
@@ -701,9 +704,11 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-3 bg-[#9b87f5] text-white border-[1.5px] border-border font-bold text-[12px] uppercase tracking-widest hover:bg-[#8b75f0] neo-shadow hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2"
+                                    disabled={isAnalyzingReq}
+                                    className="px-6 py-3 bg-[#9b87f5] text-white border-[1.5px] border-border font-bold text-[12px] uppercase tracking-widest hover:bg-[#8b75f0] neo-shadow hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2 disabled:opacity-50"
                                 >
-                                    <Wand2 size={16} /> ANALYZE REQUEST
+                                    {isAnalyzingReq ? <Loader2 className="animate-spin" size={16} /> : <Wand2 size={16} />} 
+                                    {isAnalyzingReq ? "ANALYZING..." : "ANALYZE REQUEST"}
                                 </button>
                             </div>
                         </form>

@@ -3,7 +3,7 @@ import { db } from "@/app/db";
 import { changeOrders, changeRequests, projects, users } from "@/app/(Schema)/schema";
 import { eq } from "drizzle-orm";
 import ImageKit from "imagekit";
-import { jsPDF } from "jspdf";
+import jsPDF from "jspdf";
 import { format } from "date-fns";
 
 const imagekit = new ImageKit({
@@ -59,6 +59,16 @@ export async function POST(
     // Configuration / Theme matching "Neo-Brutalism" vibes
     doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
+
+    if (designer.plan === 'free') {
+      doc.saveGraphicsState();
+      doc.setGState(new (doc as any).GState({opacity: 0.1}));
+      doc.setTextColor(150, 150, 150);
+      doc.setFontSize(80);
+      doc.text("WATERMARK - FREE PLAN", 30, 250, { angle: 45 });
+      doc.restoreGraphicsState();
+      doc.setTextColor(0, 0, 0); // reset color
+    }
 
     // Header
     doc.text("CHANGE ORDER APPROVAL", 20, 30);

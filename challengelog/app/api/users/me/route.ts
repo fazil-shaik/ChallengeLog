@@ -1,0 +1,32 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authConfig } from "@/app/lib/auth";
+import { db } from "../../../db";
+import { users } from "@/app/(Schema)/schema";
+import { eq } from "drizzle-orm";
+
+const getSession = async () => {
+    return await getServerSession(authConfig);
+}
+
+export async function GET(req: Request) {
+  try {
+    const session = await getSession();
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const dbUser = await db.query.users.findFirst({
+      where: eq(users.email, session.user.email)
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(dbUser);
+  } catch (error) {
+    console.error("Failed to fetch user:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}

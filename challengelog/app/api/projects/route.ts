@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/app/lib/auth";
 import { db } from "@/app/db";
-import { projects } from "@/app/(Schema)/schema";
+import { projects, users } from "@/app/(Schema)/schema";
 import { eq, desc } from "drizzle-orm";
 
 export async function GET() {
@@ -31,6 +31,21 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const { clientName, clientEmail, briefText, briefFileUrl, briefFileId, originalValue } = body;
+
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+      columns: { plan: true }
+    });
+
+    if (user?.plan === 'free') {
+      const existingProjects = await db.query.projects.findMany({
+        where: eq(projects.userId, userId),
+        columns: { id: true }
+      });
+      if (existingProjects.length >= 2) {
+        return new NextResponse("Free plan limit reached (max 2 projects). Please upgrade to Pro.", { status: 403 });
+      }
+    }
 
     const newProject = await db.insert(projects).values({
       userId,

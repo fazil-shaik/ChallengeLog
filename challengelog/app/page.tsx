@@ -365,9 +365,9 @@ export default async function Home() {
                   ))}
                 </ul>
               </div>
-              <button className="w-full py-4 border-[1.5px] border-border text-[14px] font-bold text-foreground bg-background hover:bg-muted transition-colors uppercase tracking-widest neo-shadow-sm">
+              <Link href="/signup" className="flex justify-center items-center w-full py-4 border-[1.5px] border-border text-[14px] font-bold text-foreground bg-background hover:bg-muted transition-colors uppercase tracking-widest neo-shadow-sm">
                 START FOR FREE
-              </button>
+              </Link>
             </div>
 
             {/* Solo Pro Tier (Featured) */}
@@ -390,9 +390,9 @@ export default async function Home() {
                   ))}
                 </ul>
               </div>
-              <button className="w-full py-4 bg-primary text-background border-2 border-border text-[14px] font-bold hover:bg-primary-hover transition-colors uppercase tracking-widest neo-shadow-sm">
+              <Link href="/signup" className="flex justify-center items-center w-full py-4 bg-primary text-background border-2 border-border text-[14px] font-bold hover:bg-primary-hover transition-colors uppercase tracking-widest neo-shadow-sm">
                 START SOLO PRO
-              </button>
+              </Link>
             </div>
 
             {/* Studio Tier */}
@@ -412,9 +412,9 @@ export default async function Home() {
                   ))}
                 </ul>
               </div>
-              <button className="w-full py-4 border-[1.5px] border-border text-[14px] font-bold text-foreground bg-background hover:bg-muted transition-colors uppercase tracking-widest neo-shadow-sm">
+              <Link href="/signup" className="flex justify-center items-center w-full py-4 border-[1.5px] border-border text-[14px] font-bold text-foreground bg-background hover:bg-muted transition-colors uppercase tracking-widest neo-shadow-sm">
                 CONTACT SALES
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -505,12 +505,12 @@ export default async function Home() {
           </h2>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mb-12">
-            <button className="w-full sm:w-auto px-10 py-5 bg-background text-foreground text-[14px] font-bold uppercase tracking-widest border-2 border-border hover:bg-muted transition-colors neo-shadow transform hover:-translate-y-1">
+            <Link href="/signup" className="flex justify-center items-center w-full sm:w-auto px-10 py-5 bg-background text-foreground text-[14px] font-bold uppercase tracking-widest border-2 border-border hover:bg-muted transition-colors neo-shadow transform hover:-translate-y-1">
               START FREE TRIAL
-            </button>
-            <button className="w-full sm:w-auto px-10 py-5 bg-transparent text-background border-2 border-background text-[14px] font-bold uppercase tracking-widest hover:bg-background/10 transition-colors">
+            </Link>
+            <Link href="/signup" className="flex justify-center items-center w-full sm:w-auto px-10 py-5 bg-transparent text-background border-2 border-background text-[14px] font-bold uppercase tracking-widest hover:bg-background/10 transition-colors">
               SCHEDULE DEMO
-            </button>
+            </Link>
           </div>
 
           <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-[11px] font-bold uppercase tracking-widest text-background/90 mix-blend-color-burn dark:mix-blend-normal dark:text-foreground/80">

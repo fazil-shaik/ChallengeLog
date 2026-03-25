@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/app/lib/auth";
 import { db } from "@/app/db";
-import { projects, changeRequests, changeOrders } from "@/app/(Schema)/schema";
+import { projects, changeRequests, changeOrders, auditEvents } from "@/app/(Schema)/schema";
 import { eq, desc, inArray } from "drizzle-orm";
 
 export async function GET(
@@ -46,7 +46,18 @@ export async function GET(
       });
     }
 
-    return NextResponse.json({ ...project, changeRequests: projectChangeRequests, changeOrders: projectChangeOrders });
+    // Fetch related audit events
+    const projectAuditEvents = await db.query.auditEvents.findMany({
+      where: eq(auditEvents.projectId, projectId),
+      orderBy: [desc(auditEvents.createdAt)],
+    });
+
+    return NextResponse.json({ 
+      ...project, 
+      changeRequests: projectChangeRequests, 
+      changeOrders: projectChangeOrders,
+      auditEvents: projectAuditEvents 
+    });
   } catch (error) {
     console.error(error);
     return new NextResponse("Internal Error", { status: 500 });

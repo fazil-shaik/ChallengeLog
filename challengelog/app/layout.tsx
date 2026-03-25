@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
+import { Toaster } from "sonner";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -39,6 +40,7 @@ export default function RootLayout({
             <main className="flex-grow">
               {children}
             </main>
+            <Toaster position="bottom-right" richColors theme="system" />
           </ThemeProvider>
         </SessionProviderWrapper>
       </body>

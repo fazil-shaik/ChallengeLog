@@ -3,10 +3,10 @@
 import { useEffect, useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { ArrowLeft, CheckCircle2, Clock, FileText, IndianRupee, Mail, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import ThemeToggle from "@/components/ThemeToggle";
-
 export default function ChangeOrderDetail({
     params
 }: {
@@ -53,13 +53,14 @@ export default function ChangeOrderDetail({
                 // Refresh data to show updated timeline and status
                 const refreshed = await fetch(`/api/change-orders/${orderId}`);
                 if (refreshed.ok) {
-                   setData(await refreshed.json());
+                    setData(await refreshed.json());
                 }
+                toast.success("Order Approved Successfully!");
             } else {
-                alert(await res.text());
+                toast.error(await res.text() || "Failed to approve.");
             }
         } catch (err) {
-            alert("Approval failed.");
+            toast.error("Approval failed.");
         } finally {
             setIsApproving(false);
         }
@@ -103,11 +104,10 @@ export default function ChangeOrderDetail({
                                 <h1 className="text-[32px] md:text-[40px] font-serif font-bold italic tracking-tight text-foreground leading-none">
                                     Change Order #{order.id.slice(-6).toUpperCase()}
                                 </h1>
-                                <span className={`px-3 py-1.5 border-[1.5px] text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 ${
-                                    order.status === 'approved' ? 'bg-primary/10 text-primary border-primary/30' :
+                                <span className={`px-3 py-1.5 border-[1.5px] text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 ${order.status === 'approved' ? 'bg-primary/10 text-primary border-primary/30' :
                                     order.status === 'pending' ? 'bg-[#9b87f5]/10 text-[#9b87f5] border-[#9b87f5]/30' :
-                                    'bg-muted text-foreground/60 border-border'
-                                }`}>
+                                        'bg-muted text-foreground/60 border-border'
+                                    }`}>
                                     {order.status === 'approved' ? <CheckCircle2 size={14} /> : <Clock size={14} />}
                                     {order.status}
                                 </span>
@@ -125,14 +125,14 @@ export default function ChangeOrderDetail({
 
             {/* Main content */}
             <div className="max-w-[1000px] mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
-                
+
                 {/* Left Column: Details & Approval */}
                 <div className="lg:col-span-2 space-y-10">
-                    
+
                     {/* Order Details */}
                     <div className="bg-card border-2 border-border neo-shadow p-8 relative">
                         <div className="absolute top-[-2px] right-[-2px] w-8 h-8 border-t-[4px] border-r-[4px] border-primary z-10 pointer-events-none"></div>
-                        
+
                         <h2 className="text-[24px] font-serif font-bold italic text-foreground flex items-center gap-3 mb-8">
                             <div className="w-4 h-4 bg-primary border-[1.5px] border-border"></div>
                             Scope Details
@@ -199,7 +199,7 @@ export default function ChangeOrderDetail({
                         </h2>
 
                         <div className="relative border-l-[1.5px] border-border ml-3 pb-4 space-y-8">
-                            
+
                             {/* Order Created */}
                             <div className="relative pl-6">
                                 <div className="absolute left-[-5px] top-1 w-[9px] h-[9px] rounded-full bg-background border-[1.5px] border-border"></div>
@@ -214,7 +214,7 @@ export default function ChangeOrderDetail({
                                     Sent for Approval <Mail size={12} />
                                 </p>
                             </div>
-                            
+
                             {/* Approved */}
                             {order.status === 'approved' && order.approvedAt && (
                                 <div className="relative pl-6">

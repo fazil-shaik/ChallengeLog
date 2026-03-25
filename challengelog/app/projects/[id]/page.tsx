@@ -3,6 +3,8 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
+import jsPDF from "jspdf";
 import {
     ArrowLeft,
     Briefcase,
@@ -11,6 +13,9 @@ import {
     CircleDashed,
     Users,
     FileText,
+    Download,
+    Receipt,
+    History,
     IndianRupee,
     Mail,
     Calendar,
@@ -32,6 +37,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
     const [project, setProject] = useState<any>(null);
     const [changeRequests, setChangeRequests] = useState<any[]>([]);
     const [changeOrders, setChangeOrders] = useState<any[]>([]);
+    const [auditEvents, setAuditEvents] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -61,6 +67,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                     setProject(data);
                     setChangeRequests(data.changeRequests || []);
                     setChangeOrders(data.changeOrders || []);
+                    setAuditEvents(data.auditEvents || []);
                 }
             } catch (err) {
                 console.error("Failed to load project", err);
@@ -134,13 +141,14 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                 setChangeRequests((prev) =>
                     prev.map((req) => req.id === tempId ? { ...data.changeRequest, isAnalyzing: false } : req)
                 );
+                toast.success("Request logged and analyzed");
             } else {
                 setChangeRequests((prev) => prev.filter(req => req.id !== tempId));
-                alert("Failed to analyze and save the request. Try again.");
+                toast.error("Failed to analyze. Try again.");
             }
         } catch (err) {
             setChangeRequests((prev) => prev.filter(req => req.id !== tempId));
-            alert("Error analyzing request.");
+            toast.error("Error analyzing request.");
         }
     };
 
@@ -175,12 +183,12 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                 setChangeOrders(prev => [data.changeOrder, ...prev]);
                 setChangeRequests(prev => prev.map(r => r.id === selectedReqForOrder.id ? { ...r, status: 'pending' } : r));
                 setIsConvertModalOpen(false);
-                alert("Change order created & sent for approval!");
+                toast.success("Change order sent for approval!");
             } else {
-                alert("Failed to create change order.");
+                toast.error("Failed to create change order.");
             }
         } catch (err) {
-            alert("Error creating order.");
+            toast.error("Error creating order.");
         } finally {
             setIsSubmittingOrder(false);
         }
@@ -223,6 +231,63 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
     }
 
     if (!project) return null;
+
+    const approvedOrders = changeOrders.filter(o => o.status === 'approved');
+    const totalApprovedRecovered = approvedOrders.reduce((acc, curr) => acc + Number(curr.cost), 0);
+    const invoiceSummaryText = `Invoice Summary for ${project.clientName}\n\nTotal Approved Recovered Value: $${totalApprovedRecovered.toFixed(2)}\nNumber of Approved Orders: ${approvedOrders.length}\n`;
+
+    const handleCopySummary = () => {
+        navigator.clipboard.writeText(invoiceSummaryText);
+        toast.success("Summary copied to clipboard");
+    };
+
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.text("PROJECT SUMMARY INVOICE", 20, 30);
+        
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Client: ${project.clientName}`, 20, 45);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 52);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.text(`Total Recovered Value: $${totalApprovedRecovered.toFixed(2)}`, 20, 70);
+        doc.text(`Approved Change Orders: ${approvedOrders.length}`, 20, 78);
+
+        doc.setLineWidth(0.5);
+        doc.line(20, 85, 190, 85);
+
+        let startY = 95;
+        doc.setFontSize(12);
+
+        if (approvedOrders.length === 0) {
+            doc.setFont("helvetica", "italic");
+            doc.text("No approved change orders found for this project.", 20, startY);
+        } else {
+            approvedOrders.forEach((order, idx) => {
+                if (startY > 270) {
+                    doc.addPage();
+                    startY = 20;
+                }
+                doc.setFont("helvetica", "bold");
+                doc.text(`${idx + 1}. Order #${order.id.slice(-6).toUpperCase()}`, 20, startY);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Cost: $${order.cost} | Hours: ${order.hours} HRS | Approved: ${new Date(order.approvedAt || order.createdAt).toLocaleDateString()}`, 20, startY + 6);
+                
+                const notesLines = doc.splitTextToSize(`Notes: ${order.designerNotes || 'N/A'}`, 170);
+                doc.text(notesLines, 20, startY + 14);
+                
+                startY += 14 + (notesLines.length * 5) + 8;
+            });
+        }
+
+        doc.save(`${project.clientName.replace(/\s+/g, '_')}_Summary.pdf`);
+        toast.success("PDF Exported Successfully");
+    };
 
     return (
         <div className="min-h-screen bg-background text-foreground pb-24">
@@ -452,8 +517,73 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                     </div>
                 </div>
 
-                {/* Right Column: Project Brief */}
+                {/* Right Column: Project Brief & Audit & Invoice */}
                 <div className="space-y-10">
+                    
+                    {/* Invoice Summary Card */}
+                    <div className="bg-primary/5 border-2 border-primary neo-shadow p-8 relative">
+                        <h2 className="text-[20px] font-serif font-bold italic text-foreground flex items-center gap-3 mb-6">
+                            <Receipt size={18} className="text-primary" />
+                            Invoice Summary
+                        </h2>
+                        
+                        <div className="bg-background border-[1.5px] border-border p-6 text-center space-y-4 mb-6 neo-shadow-sm">
+                            <div>
+                                <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/50 mb-1">Recovered Value</p>
+                                <p className="text-[32px] font-mono font-bold text-success flex items-center justify-center">
+                                    <span className="text-[16px] mr-1 opacity-70">$</span>{totalApprovedRecovered.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </p>
+                            </div>
+                            <div className="pt-4 border-t border-border">
+                                <p className="text-[13px] font-bold text-foreground">{approvedOrders.length} Approved Orders</p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-3">
+                            <button
+                                onClick={handleCopySummary}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-card border-[1.5px] border-border font-bold text-[11px] uppercase tracking-widest hover:bg-muted transition-colors neo-shadow-sm"
+                            >
+                                <FileText size={14} /> COPY SUMMARY
+                            </button>
+                            <button onClick={handleExportPDF} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-background border-[1.5px] border-border font-bold text-[11px] uppercase tracking-widest hover:bg-primary/90 transition-colors neo-shadow-sm">
+                                <Download size={14} /> EXPORT PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Audit Trail Section */}
+                    <div className="bg-card border-2 border-border neo-shadow p-8 relative">
+                        <h2 className="text-[20px] font-serif font-bold italic text-foreground flex items-center gap-3 mb-6">
+                            <History size={18} className="text-foreground" />
+                            Audit Trail
+                        </h2>
+
+                        {auditEvents.length > 0 ? (
+                            <div className="relative border-l-[1.5px] border-border ml-3 pb-4 space-y-8 mt-6">
+                                {auditEvents.map((evt, idx) => (
+                                    <div key={evt.id} className="relative pl-6">
+                                        <div className="absolute left-[-5px] top-1 w-[9px] h-[9px] rounded-full bg-background border-[1.5px] border-primary"></div>
+                                        <p className="text-[12px] font-bold uppercase tracking-widest text-foreground">
+                                            {evt.eventType.replace(/_/g, " ")}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-[11px] text-foreground/50">
+                                                {format(new Date(evt.createdAt), "MMM d, h:mm a")}
+                                            </span>
+                                            <span className="text-[10px] bg-muted px-2 py-0.5 rounded text-foreground/60">{evt.actor}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 bg-muted/20 border-2 border-dashed border-border/50">
+                                <p className="text-foreground/50 font-bold text-[12px] uppercase tracking-widest">NO EVENTS RECORDED</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Project Brief */}
                     <div className="bg-card border-2 border-border neo-shadow p-8 relative hover:-translate-y-1 transition-transform">
                         <h2 className="text-[20px] font-serif font-bold italic text-foreground flex items-center gap-3 mb-8">
                             <div className="w-3 h-3 bg-warning border-[1.5px] border-border"></div>

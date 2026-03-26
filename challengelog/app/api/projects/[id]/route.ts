@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/app/lib/auth";
 import { db } from "@/app/db";
-import { projects, changeRequests, changeOrders, auditEvents } from "@/app/(Schema)/schema";
+import { projects, changeRequests, changeOrders, auditEvents, users } from "@/app/(Schema)/schema";
 import { eq, desc, inArray } from "drizzle-orm";
 
 export async function GET(
@@ -18,14 +18,22 @@ export async function GET(
     const awaitedParams = await params;
     const projectId = awaitedParams.id;
 
-    // Fetch project
-    const project = await db.query.projects.findFirst({
-      where: eq(projects.id, projectId),
-    });
+    // Fetch project with designer plan
+    const projectWithUser = await db
+      .select({
+        project: projects,
+        userPlan: users.plan,
+      })
+      .from(projects)
+      .leftJoin(users, eq(projects.userId, users.id))
+      .where(eq(projects.id, projectId))
+      .limit(1);
 
-    if (!project) {
+    if (!projectWithUser || projectWithUser.length === 0) {
       return new NextResponse("Not Found", { status: 404 });
     }
+
+    const { project, userPlan } = projectWithUser[0];
 
     // Verify ownership
     if (project.userId !== userId) {
@@ -55,6 +63,7 @@ export async function GET(
 
     return NextResponse.json({ 
       ...project, 
+      userPlan,
       changeRequests: projectChangeRequests, 
       changeOrders: projectChangeOrders,
       auditEvents: projectAuditEvents 

@@ -247,46 +247,147 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
 
     const handleExportPDF = () => {
         const doc = new jsPDF();
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 20;
+        let startY = 0;
+        const primaryColor = [15, 23, 42]; // Slate 900
+        const accentColor = [139, 92, 246]; // Violet 500
 
+        const addWatermark = (pdfDoc: any) => {
+            if (project?.userPlan === 'free') {
+                pdfDoc.saveGraphicsState();
+                try {
+                    if (pdfDoc.GState) {
+                        pdfDoc.setGState(new pdfDoc.GState({ opacity: 0.05 }));
+                    }
+                } catch (e) {}
+                pdfDoc.setTextColor(150, 150, 150);
+                pdfDoc.setFontSize(60);
+                pdfDoc.text("Changelog", 40, 200, { angle: 45 });
+                pdfDoc.restoreGraphicsState();
+            }
+        };
+
+        const addFooter = (pdfDoc: any, pageNum: number, totalPages: number) => {
+            pdfDoc.setFont("helvetica", "normal");
+            pdfDoc.setFontSize(8);
+            pdfDoc.setTextColor(150, 150, 150);
+            pdfDoc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - margin - 20, pageHeight - 10);
+            pdfDoc.text("System generated via Challengelog • Project Summary Invoice", margin, pageHeight - 10);
+        };
+
+        const checkPageBreak = (height: number) => {
+            if (startY + height > pageHeight - margin - 20) {
+                doc.addPage();
+                addWatermark(doc);
+                startY = margin + 10;
+                return true;
+            }
+            return false;
+        };
+
+        addWatermark(doc);
+
+        // Modern Header
+        doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.rect(0, 0, pageWidth, 40, 'F');
+        
+        doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(22);
-        doc.text("PROJECT SUMMARY INVOICE", 20, 30);
-
-        doc.setFontSize(14);
+        doc.text("PROJECT SUMMARY", margin, 25);
+        
+        doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
-        doc.text(`Client: ${project.clientName}`, 20, 45);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 52);
+        doc.text(`CLIENT: ${project.clientName.toUpperCase()}`, margin, 32);
+        doc.text(`DATE: ${new Date().toLocaleDateString().toUpperCase()}`, pageWidth - margin - 40, 32);
 
+        startY = 55;
+
+        // Summary Boxes
+        doc.setFillColor(248, 250, 252); // Slate 50
+        doc.rect(margin, startY, pageWidth - 2 * margin, 25, 'F');
+        
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.text(`Total Recovered Value: $${totalApprovedRecovered.toFixed(2)}`, 20, 70);
-        doc.text(`Approved Change Orders: ${approvedOrders.length}`, 20, 78);
+        doc.text("TOTAL RECOVERED VALUE", margin + 5, startY + 8);
+        doc.setFontSize(16);
+        doc.text(`$${totalApprovedRecovered.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, margin + 5, startY + 18);
+        
+        doc.setFontSize(8);
+        doc.text("APPROVED ORDERS", margin + 100, startY + 8);
+        doc.setFontSize(16);
+        doc.text(`${approvedOrders.length} ITEMS`, margin + 100, startY + 18);
 
-        doc.setLineWidth(0.5);
-        doc.line(20, 85, 190, 85);
+        startY += 40;
 
-        let startY = 95;
-        doc.setFontSize(12);
+        // Project Metadata
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("PROJECT DETAILS", margin, startY);
+        startY += 6;
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Email: ${project.clientEmail}`, margin, startY);
+        startY += 15;
+
+        // Table Header
+        doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.rect(margin, startY, pageWidth - 2 * margin, 8, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "bold");
+        doc.text("ORDER #", margin + 2, startY + 6);
+        doc.text("DATE", margin + 40, startY + 6);
+        doc.text("HOURS", margin + 80, startY + 6);
+        doc.text("VALUATION", pageWidth - margin - 30, startY + 6);
+        
+        startY += 15;
 
         if (approvedOrders.length === 0) {
+            doc.setTextColor(150, 150, 150);
             doc.setFont("helvetica", "italic");
-            doc.text("No approved change orders found for this project.", 20, startY);
+            doc.text("No approved change orders found for this project.", margin, startY);
         } else {
             approvedOrders.forEach((order, idx) => {
-                if (startY > 270) {
-                    doc.addPage();
-                    startY = 20;
-                }
+                const notesLines = doc.splitTextToSize(`Notes: ${order.designerNotes || 'N/A'}`, pageWidth - 2 * margin - 10);
+                const itemHeight = 10 + (notesLines.length * 5) + 10;
+                
+                checkPageBreak(itemHeight);
+
+                doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
                 doc.setFont("helvetica", "bold");
-                doc.text(`${idx + 1}. Order #${order.id.slice(-6).toUpperCase()}`, 20, startY);
+                doc.setFontSize(10);
+                doc.text(order.id.slice(-8).toUpperCase(), margin + 2, startY);
+                
                 doc.setFont("helvetica", "normal");
-                doc.text(`Cost: $${order.cost} | Hours: ${order.hours} HRS | Approved: ${new Date(order.approvedAt || order.createdAt).toLocaleDateString()}`, 20, startY + 6);
-
-                const notesLines = doc.splitTextToSize(`Notes: ${order.designerNotes || 'N/A'}`, 170);
-                doc.text(notesLines, 20, startY + 14);
-
-                startY += 14 + (notesLines.length * 5) + 8;
+                doc.text(new Date(order.approvedAt || order.createdAt).toLocaleDateString(), margin + 40, startY);
+                doc.text(`${order.hours} HRS`, margin + 80, startY);
+                
+                doc.setFont("helvetica", "bold");
+                doc.text(`$${Number(order.cost).toLocaleString()}`, pageWidth - margin - 30, startY);
+                
+                startY += 6;
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(100, 100, 100);
+                doc.text(notesLines, margin + 2, startY);
+                
+                startY += (notesLines.length * 5) + 10;
+                
+                doc.setDrawColor(240, 240, 240);
+                doc.line(margin, startY - 5, pageWidth - margin, startY - 5);
+                startY += 5;
             });
+        }
+
+        // Add page numbers
+        const totalPages = (doc as any).internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            addFooter(doc, i, totalPages);
         }
 
         doc.save(`${project.clientName.replace(/\s+/g, '_')}_Summary.pdf`);

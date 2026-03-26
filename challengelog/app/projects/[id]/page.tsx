@@ -261,7 +261,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                     if (pdfDoc.GState) {
                         pdfDoc.setGState(new pdfDoc.GState({ opacity: 0.05 }));
                     }
-                } catch (e) {}
+                } catch (e) { }
                 pdfDoc.setTextColor(150, 150, 150);
                 pdfDoc.setFontSize(60);
                 pdfDoc.text("Changelog", 40, 200, { angle: 45 });
@@ -292,12 +292,12 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
         // Modern Header
         doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
         doc.rect(0, 0, pageWidth, 40, 'F');
-        
+
         doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(22);
         doc.text("PROJECT SUMMARY", margin, 25);
-        
+
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
         doc.text(`CLIENT: ${project.clientName.toUpperCase()}`, margin, 32);
@@ -308,14 +308,14 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
         // Summary Boxes
         doc.setFillColor(248, 250, 252); // Slate 50
         doc.rect(margin, startY, pageWidth - 2 * margin, 25, 'F');
-        
+
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
         doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
         doc.text("TOTAL RECOVERED VALUE", margin + 5, startY + 8);
         doc.setFontSize(16);
         doc.text(`$${totalApprovedRecovered.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, margin + 5, startY + 18);
-        
+
         doc.setFontSize(8);
         doc.text("APPROVED ORDERS", margin + 100, startY + 8);
         doc.setFontSize(16);
@@ -343,7 +343,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
         doc.text("DATE", margin + 40, startY + 6);
         doc.text("HOURS", margin + 80, startY + 6);
         doc.text("VALUATION", pageWidth - margin - 30, startY + 6);
-        
+
         startY += 15;
 
         if (approvedOrders.length === 0) {
@@ -354,29 +354,29 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
             approvedOrders.forEach((order, idx) => {
                 const notesLines = doc.splitTextToSize(`Notes: ${order.designerNotes || 'N/A'}`, pageWidth - 2 * margin - 10);
                 const itemHeight = 10 + (notesLines.length * 5) + 10;
-                
+
                 checkPageBreak(itemHeight);
 
                 doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(10);
                 doc.text(order.id.slice(-8).toUpperCase(), margin + 2, startY);
-                
+
                 doc.setFont("helvetica", "normal");
                 doc.text(new Date(order.approvedAt || order.createdAt).toLocaleDateString(), margin + 40, startY);
                 doc.text(`${order.hours} HRS`, margin + 80, startY);
-                
+
                 doc.setFont("helvetica", "bold");
                 doc.text(`$${Number(order.cost).toLocaleString()}`, pageWidth - margin - 30, startY);
-                
+
                 startY += 6;
                 doc.setFontSize(9);
                 doc.setFont("helvetica", "normal");
                 doc.setTextColor(100, 100, 100);
                 doc.text(notesLines, margin + 2, startY);
-                
+
                 startY += (notesLines.length * 5) + 10;
-                
+
                 doc.setDrawColor(240, 240, 240);
                 doc.line(margin, startY - 5, pageWidth - margin, startY - 5);
                 startY += 5;

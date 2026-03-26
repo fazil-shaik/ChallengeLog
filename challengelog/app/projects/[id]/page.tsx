@@ -416,36 +416,54 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
 
                                             {/* AI Analysis Card */}
                                             {req.isAnalyzing ? (
-                                                <div className="mt-4 flex items-center gap-3 text-secondary text-[12px] font-bold uppercase tracking-widest bg-secondary/10 border border-secondary/20 p-3">
-                                                    <Loader2 className="animate-spin" size={16} />
-                                                    Groq AI Analyzing Scope...
-                                                </div>
-                                            ) : (
-                                                <div className="mt-4 bg-background border-[1px] border-border p-4 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center neo-shadow-sm">
+                                                <div className="mt-4 bg-muted/20 border-[1.5px] border-border border-dashed p-6 flex flex-col md:flex-row gap-5 justify-between items-center animate-pulse">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className={`w-3 h-3 rounded-full ${req.aiInScope ? 'bg-primary' : 'bg-destructive'}`}></div>
-                                                            <span className="text-[12px] font-bold uppercase tracking-widest">
-                                                                {req.aiInScope ? 'IN SCOPE' : 'OUT OF SCOPE'}
-                                                            </span>
+                                                        <div className="w-10 h-10 bg-muted border-[1.5px] border-border flex items-center justify-center">
+                                                            <Loader2 className="animate-spin text-foreground/30" size={20} />
                                                         </div>
-                                                        <div className="text-[12px] text-foreground/60 max-w-[200px] truncate" title={req.aiReasoning}>
-                                                            {req.aiReasoning || "Manual entry"}
+                                                        <div>
+                                                            <p className="text-[12px] font-black uppercase tracking-widest text-foreground/40">Analyzing Request...</p>
+                                                            <p className="text-[10px] font-bold text-foreground/20 italic">Groq AI is determining scope & effort</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-center gap-3 shrink-0">
-                                                        <div className="bg-card border border-border px-3 py-1 text-[12px] font-bold font-mono">
-                                                            {req.aiHours} <span className="text-foreground/50">HRS</span>
+                                                    <div className="flex gap-3">
+                                                        <div className="w-20 h-10 bg-muted/50 border-[1.5px] border-border"></div>
+                                                        <div className="w-20 h-10 bg-muted/50 border-[1.5px] border-border"></div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="mt-4 bg-[#f8f9fa] dark:bg-muted/10 border-[1.5px] border-border p-5 flex flex-col md:flex-row gap-5 justify-between items-start md:items-center neo-shadow-sm transition-all hover:neo-shadow">
+                                                    <div className="flex flex-col gap-2 flex-1">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                                                            <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.1em] border-[1.5px] shrink-0 text-center ${req.aiInScope ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 border-rose-500/20'}`}>
+                                                                {req.aiInScope ? 'IN SCOPE' : 'OUT OF SCOPE'}
+                                                            </span>
+                                                            <p className="text-[12px] text-foreground/70 italic font-medium leading-tight">
+                                                                {req.aiReasoning || "Manual entry"}
+                                                            </p>
                                                         </div>
-                                                        <div className="bg-card border border-border px-3 py-1 text-[12px] font-bold font-mono">
-                                                            <span className="text-foreground/50">$</span>{req.aiCost}
+                                                    </div>
+                                                    <div className="flex items-center gap-4 shrink-0 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0 border-border/40">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="flex flex-col items-end">
+                                                                <span className="text-[8px] font-bold text-foreground/40 uppercase tracking-widest mb-1">EST. HOURS</span>
+                                                                <div className="bg-card border-[1.5px] border-border px-3 py-1.5 text-[13px] font-bold font-mono neo-shadow-sm min-w-[60px] text-center">
+                                                                    {req.aiHours}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex flex-col items-end">
+                                                                <span className="text-[8px] font-bold text-foreground/40 uppercase tracking-widest mb-1">RECOVERABLE</span>
+                                                                <div className="bg-primary text-background border-[1.5px] border-border px-3 py-1.5 text-[13px] font-bold font-mono neo-shadow-sm min-w-[70px] text-center">
+                                                                    ${req.aiCost}
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         {req.status === 'draft' && (
                                                             <button
                                                                 onClick={() => openConvertToOrderModal(req)}
-                                                                className="px-3 py-1 bg-primary text-background border border-primary text-[11px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors neo-shadow-sm hover:-translate-y-0.5 active:translate-y-0"
+                                                                className="px-5 py-2.5 bg-primary text-background border-[1.5px] border-border text-[11px] font-black uppercase tracking-widest hover:bg-primary/90 transition-all neo-shadow hover:-translate-y-0.5 active:translate-y-0"
                                                             >
-                                                                Convert
+                                                                CONVERT
                                                             </button>
                                                         )}
                                                     </div>

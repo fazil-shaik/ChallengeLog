@@ -64,10 +64,17 @@ export async function POST(req: NextRequest) {
                 ${description}
                 ---
                 
-                Evaluate this request against the project brief. Provide your response as a JSON object with exactly these fields:
+                Analyze the "Change Request Description" against the "Project Brief / Contract".
+                
+                Rules for "inScope":
+                1. Set "inScope" to true ONLY if the change request is explicitly mentioned or reasonably implied as part of the initial deliverables in the brief.
+                2. Set "inScope" to false if the request adds new features, design changes, or functionality NOT covered by the brief.
+                3. If no brief is provided, "inScope" MUST be false.
+                
+                Provide your response as a JSON object with exactly these fields:
                 - "hours": (number) Estimated hours to complete.
                 - "cost": (number) Estimated cost based on typical $100/hr consultant rate.
-                - "inScope": (boolean) True if this request is already covered by the brief, False if it is out of scope.
+                - "inScope": (boolean) Whether the request is within the original scope.
                 - "reasoning": (string) Short explanation (1-2 sentences max) for your scope decision.
               `
             }

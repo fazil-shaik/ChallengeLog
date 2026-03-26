@@ -114,8 +114,8 @@ export default function NewProject() {
         <div key={num} className="flex items-center">
           <div
             className={`flex items-center justify-center w-10 h-10 border-2 transition-all duration-300 ${step >= num
-                ? "bg-primary border-border text-background font-bold neo-shadow-sm"
-                : "bg-muted border-border/50 text-foreground/50 font-bold"
+              ? "bg-primary border-border text-background font-bold neo-shadow-sm"
+              : "bg-muted border-border/50 text-foreground/50 font-bold"
               }`}
           >
             {step > num ? <Check size={18} strokeWidth={3} /> : num}
@@ -271,8 +271,8 @@ export default function NewProject() {
             onClick={handlePrev}
             disabled={step === 1}
             className={`flex items-center gap-2 px-6 py-3.5 border-[1.5px] font-bold text-[12px] uppercase tracking-widest transition-all ${step === 1
-                ? "opacity-50 cursor-not-allowed border-border/20 text-foreground/30 bg-muted/30"
-                : "border-border text-foreground bg-card hover:bg-muted neo-shadow-sm hover:-translate-y-0.5 active:translate-y-0"
+              ? "opacity-50 cursor-not-allowed border-border/20 text-foreground/30 bg-muted/30"
+              : "border-border text-foreground bg-card hover:bg-muted neo-shadow-sm hover:-translate-y-0.5 active:translate-y-0"
               }`}
           >
             <ChevronLeft size={16} strokeWidth={3} /> BACK
@@ -283,8 +283,8 @@ export default function NewProject() {
               onClick={handleNext}
               disabled={(step === 1 && (!formData.clientName || !formData.clientEmail))}
               className={`flex items-center gap-2 px-8 py-3.5 border-[1.5px] font-bold text-[12px] uppercase tracking-widest transition-all ${(step === 1 && (!formData.clientName || !formData.clientEmail))
-                  ? "border-border/20 text-foreground/40 bg-muted/50 cursor-not-allowed"
-                  : "border-border text-background bg-primary hover:bg-primary-hover neo-shadow hover:-translate-y-1 active:translate-y-0"
+                ? "border-border/20 text-foreground/40 bg-muted/50 cursor-not-allowed"
+                : "border-border text-background bg-primary hover:bg-primary-hover neo-shadow hover:-translate-y-1 active:translate-y-0"
                 }`}
             >
               CONTINUE <ChevronRight size={16} strokeWidth={3} />
@@ -294,8 +294,8 @@ export default function NewProject() {
               onClick={handleSubmit}
               disabled={isSubmitting || !formData.originalValue}
               className={`flex items-center gap-2 px-8 py-3.5 border-[1.5px] font-bold text-[12px] uppercase tracking-widest transition-all ${isSubmitting || !formData.originalValue
-                  ? "border-border/20 text-foreground/40 bg-muted/50 cursor-not-allowed"
-                  : "border-border text-foreground bg-secondary hover:bg-[#D9665C]/90 dark:bg-secondary dark:hover:bg-[#C29352] dark:text-black neo-shadow hover:-translate-y-1 active:translate-y-0"
+                ? "border-border/20 text-foreground/40 bg-muted/50 cursor-not-allowed"
+                : "border-border text-foreground bg-secondary hover:bg-[#D9665C]/90 dark:bg-secondary dark:hover:bg-[#C29352] dark:text-black neo-shadow hover:-translate-y-1 active:translate-y-0"
                 }`}
             >
               {isSubmitting ? (

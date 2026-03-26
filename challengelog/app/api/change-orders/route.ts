@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
     try {
       const emailRes = await resend.emails.send({
-        from: "hello@contact.shorty-url.online", // Simplified from address to fix validation error
+        from: '"ChangeLog" <hello@contact.shorty-url.online>', // Quoted name helps avoid spam filters
         to: [project.clientEmail],
         subject: `Approval Required: New Change Order for ${project.clientName}`,
         react: ChangeOrderApprovalEmail({

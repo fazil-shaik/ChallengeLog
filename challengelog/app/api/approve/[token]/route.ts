@@ -83,7 +83,7 @@ export async function POST(
       const orderLink = `${origin}/projects/${project.id}/orders/${order.id}`;
 
       const emailRes = await resend.emails.send({
-        from: "onboarding@resend.dev", // Use onboarding domain to ensure delivery in test mode
+        from: "hello@contact.shorty-url.online",
         to: [designer.email],
         subject: `Approved: Change Order for ${project.clientName}`,
         react: ChangeOrderApprovedEmail({
@@ -94,7 +94,7 @@ export async function POST(
           orderLink,
         }) as React.ReactElement,
       });
-      
+
       if (emailRes.error) {
         console.error("Failed to send approval confirmation email (Resend API Error):", emailRes.error);
       }

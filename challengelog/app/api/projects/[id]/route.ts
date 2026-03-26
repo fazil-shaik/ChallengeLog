@@ -61,12 +61,12 @@ export async function GET(
       orderBy: [desc(auditEvents.createdAt)],
     });
 
-    return NextResponse.json({ 
-      ...project, 
+    return NextResponse.json({
+      ...project,
       userPlan,
-      changeRequests: projectChangeRequests, 
+      changeRequests: projectChangeRequests,
       changeOrders: projectChangeOrders,
-      auditEvents: projectAuditEvents 
+      auditEvents: projectAuditEvents
     });
   } catch (error) {
     console.error(error);
@@ -85,7 +85,7 @@ export async function PATCH(
 
     const awaitedParams = await params;
     const projectId = awaitedParams.id;
-    
+
     const body = await req.json();
     const { status } = body;
 

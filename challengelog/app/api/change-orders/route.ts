@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const project = await db.query.projects.findFirst({
       where: eq(projects.id, projectId),
       with: {
-         // Maybe user is not configured in relations, we fetch user separately
+        // Maybe user is not configured in relations, we fetch user separately
       }
     });
 
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
     try {
       const emailRes = await resend.emails.send({
-        from: "onboarding@resend.dev", // Uses Resend's default onboarding email
+        from: "hello@contact.shorty-url.online", // Simplified from address to fix validation error
         to: [project.clientEmail],
         subject: `Approval Required: New Change Order for ${project.clientName}`,
         react: ChangeOrderApprovalEmail({

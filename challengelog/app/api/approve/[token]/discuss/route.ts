@@ -55,7 +55,7 @@ export async function POST(
       const orderLink = `${origin}/projects/${project.id}/orders/${order.id}`;
 
       const emailRes = await resend.emails.send({
-        from: "onboarding@resend.dev",
+        from: "hello@contact.shorty-url.online",
         to: [designer.email],
         subject: `Discussion Requested: Change Order for ${project.clientName}`,
         react: ChangeOrderDiscussEmail({

@@ -79,9 +79,10 @@ export async function POST(
 
     // Send email to designer
     if (designer.email) {
-      const orderLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/projects/${project.id}/orders/${order.id}`;
-      
-      await resend.emails.send({
+      const origin = req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const orderLink = `${origin}/projects/${project.id}/orders/${order.id}`;
+
+      const emailRes = await resend.emails.send({
         from: "onboarding@resend.dev", // Use onboarding domain to ensure delivery in test mode
         to: [designer.email],
         subject: `Approved: Change Order for ${project.clientName}`,
@@ -93,6 +94,10 @@ export async function POST(
           orderLink,
         }) as React.ReactElement,
       });
+      
+      if (emailRes.error) {
+        console.error("Failed to send approval confirmation email (Resend API Error):", emailRes.error);
+      }
     }
 
     return NextResponse.json({ success: true, message: 'Approved successfully' });

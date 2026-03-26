@@ -51,9 +51,10 @@ export async function POST(
 
     // Send email to designer requesting discussion
     if (designer.email) {
-      const orderLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/projects/${project.id}/orders/${order.id}`;
+      const origin = req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const orderLink = `${origin}/projects/${project.id}/orders/${order.id}`;
 
-      await resend.emails.send({
+      const emailRes = await resend.emails.send({
         from: "onboarding@resend.dev",
         to: [designer.email],
         subject: `Discussion Requested: Change Order for ${project.clientName}`,
@@ -64,6 +65,10 @@ export async function POST(
           orderLink,
         }) as React.ReactElement,
       });
+
+      if (emailRes.error) {
+        console.error("Failed to send discussion request email (Resend API Error):", emailRes.error);
+      }
     }
 
     return NextResponse.json({ success: true, message: 'Discussion requested successfully' });

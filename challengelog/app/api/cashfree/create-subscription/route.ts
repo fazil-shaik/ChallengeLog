@@ -31,6 +31,7 @@ export async function POST(req: Request) {
 
     // Create subscription via Cashfree SDK
     // Note: To use this properly, the plan must be created in Cashfree Dashboard first
+    const origin = req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const request = {
       subscription_session_id: undefined, // this is what we get back
       plan_id: planId || "PRO_MONTHLY",
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
       subscription_details: {
         subscription_reference: subscriptionReference
       },
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/settings/billing?session_id={subscription_session_id}`
+      return_url: `${origin}/settings/billing?session_id={subscription_session_id}`
     };
 
     // The current cashfree-pg SDK for subscriptions has a specific method
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
     // In a real Cashfree setup, the response contains auth_link / link to hosted checkout
     const checkoutUrl = response?.data?.auth_link || response?.data?.payment_link || (response?.data as any)?.checkout_url;
 
-    return NextResponse.json({ checkoutUrl: checkoutUrl || `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/settings/billing?mock_success=true` });
+    return NextResponse.json({ checkoutUrl: checkoutUrl || `${req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/settings/billing?mock_success=true` });
 
   } catch (error: any) {
     console.error("Cashfree Subscription Create error:", error);

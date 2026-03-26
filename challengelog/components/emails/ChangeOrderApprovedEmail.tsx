@@ -57,7 +57,7 @@ export const ChangeOrderApprovedEmail = ({
             <Text className="text-black text-[14px] leading-[24px]">
               The status has been updated in your dashboard. You can now proceed with the requested changes.
             </Text>
-            
+
             <Section className="text-center mt-[32px] mb-[32px]">
               <a
                 href={orderLink}

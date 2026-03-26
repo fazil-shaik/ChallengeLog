@@ -6,6 +6,10 @@ import { db } from "@/app/db";
 import { changeOrders, changeRequests, auditEvents, projects, users } from "@/app/(Schema)/schema";
 import { eq } from "drizzle-orm";
 import crypto from "crypto";
+import { Resend } from "resend";
+import { ChangeOrderApprovalEmail } from "@/components/emails/ChangeOrderApprovalEmail";
+
+const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy");
 
 export async function POST(req: Request) {
   try {
@@ -63,26 +67,30 @@ export async function POST(req: Request) {
       })
     });
 
-    // 4. Send Email via internal API call (or directly here if preferred, but following plan)
-    const emailRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/email/send-approval`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        clientEmail: project.clientEmail,
-        clientName: project.clientName,
-        designerName: designer?.name || "Your Designer",
-        projectName: project.clientName,
-        changeDescription: updatedReq.description,
-        cost: cost.toString(),
-        approvalToken: approvalToken,
-        projectId: project.id,
-        orderId: newOrder.id
-      })
-    });
+    // 4. Send Email directly using Resend
+    const origin = req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const approvalLink = `${origin}/approve/${approvalToken}`;
 
-    if (!emailRes.ok) {
-       console.error("Failed to send approval email");
-       // we still return success for order creation, email can be retried or caught
+    try {
+      const emailRes = await resend.emails.send({
+        from: "onboarding@resend.dev", // Uses Resend's default onboarding email
+        to: [project.clientEmail],
+        subject: `Approval Required: New Change Order for ${project.clientName}`,
+        react: ChangeOrderApprovalEmail({
+          designerName: designer?.name || "Your Designer",
+          clientName: project.clientName,
+          projectName: project.clientName,
+          changeDescription: updatedReq.description,
+          cost: cost.toString(),
+          approvalLink,
+        }) as React.ReactElement,
+      });
+
+      if (emailRes.error) {
+        console.error("Failed to send approval email (Resend API Error):", emailRes.error);
+      }
+    } catch (emailError) {
+      console.error("Failed to send approval email:", emailError);
     }
 
     return NextResponse.json({ changeOrder: newOrder });

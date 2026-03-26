@@ -17,7 +17,6 @@ import {
     Download,
     Receipt,
     History,
-    IndianRupee,
     Mail,
     Calendar,
     ChevronDown,
@@ -27,7 +26,8 @@ import {
     MessageSquare,
     Phone,
     BrainCircuit,
-    Wand2
+    Wand2,
+    DollarSign
 } from "lucide-react";
 import { format } from "date-fns";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -247,11 +247,11 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
 
     const handleExportPDF = () => {
         const doc = new jsPDF();
-        
+
         doc.setFont("helvetica", "bold");
         doc.setFontSize(22);
         doc.text("PROJECT SUMMARY INVOICE", 20, 30);
-        
+
         doc.setFontSize(14);
         doc.setFont("helvetica", "normal");
         doc.text(`Client: ${project.clientName}`, 20, 45);
@@ -281,10 +281,10 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                 doc.text(`${idx + 1}. Order #${order.id.slice(-6).toUpperCase()}`, 20, startY);
                 doc.setFont("helvetica", "normal");
                 doc.text(`Cost: $${order.cost} | Hours: ${order.hours} HRS | Approved: ${new Date(order.approvedAt || order.createdAt).toLocaleDateString()}`, 20, startY + 6);
-                
+
                 const notesLines = doc.splitTextToSize(`Notes: ${order.designerNotes || 'N/A'}`, 170);
                 doc.text(notesLines, 20, startY + 14);
-                
+
                 startY += 14 + (notesLines.length * 5) + 8;
             });
         }
@@ -351,7 +351,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                             <div className="absolute top-0 right-0 w-24 h-24 bg-background/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700"></div>
                             <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5 relative z-10 text-background/80">PROJECT VALUE</p>
                             <p className="text-[32px] font-serif font-bold text-background leading-none flex items-center relative z-10">
-                                <IndianRupee size={24} className="text-background/60 mr-0.5" />
+                                <DollarSign size={24} className="text-background/60 mr-0.5" />
                                 {Number(project.originalValue).toLocaleString()}
                             </p>
                         </div>
@@ -418,7 +418,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                                             {req.isAnalyzing ? (
                                                 <div className="mt-4 flex items-center gap-3 text-secondary text-[12px] font-bold uppercase tracking-widest bg-secondary/10 border border-secondary/20 p-3">
                                                     <Loader2 className="animate-spin" size={16} />
-                                                    Gemini AI Analyzing Scope...
+                                                    Groq AI Analyzing Scope...
                                                 </div>
                                             ) : (
                                                 <div className="mt-4 bg-background border-[1px] border-border p-4 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center neo-shadow-sm">
@@ -441,7 +441,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                                                             <span className="text-foreground/50">$</span>{req.aiCost}
                                                         </div>
                                                         {req.status === 'draft' && (
-                                                            <button 
+                                                            <button
                                                                 onClick={() => openConvertToOrderModal(req)}
                                                                 className="px-3 py-1 bg-primary text-background border border-primary text-[11px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors neo-shadow-sm hover:-translate-y-0.5 active:translate-y-0"
                                                             >
@@ -487,11 +487,10 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                                     <div key={order.id} className="p-5 flex items-center justify-between hover:bg-muted/10 transition-colors group">
                                         <div>
                                             <div className="flex items-center gap-3 mb-1">
-                                                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 border ${
-                                                    order.status === 'approved' ? 'bg-primary/10 text-primary border-primary/30' :
+                                                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 border ${order.status === 'approved' ? 'bg-primary/10 text-primary border-primary/30' :
                                                     order.status === 'pending' ? 'bg-[#9b87f5]/10 text-[#9b87f5] border-[#9b87f5]/30' :
-                                                    'bg-muted text-foreground/60 border-border'
-                                                }`}>
+                                                        'bg-muted text-foreground/60 border-border'
+                                                    }`}>
                                                     {order.status}
                                                 </span>
                                                 <span className="text-[12px] font-medium text-foreground/60">
@@ -523,14 +522,14 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
 
                 {/* Right Column: Project Brief & Audit & Invoice */}
                 <div className="space-y-10">
-                    
+
                     {/* Invoice Summary Card */}
                     <div className="bg-primary/5 border-2 border-primary neo-shadow p-8 relative">
                         <h2 className="text-[20px] font-serif font-bold italic text-foreground flex items-center gap-3 mb-6">
                             <Receipt size={18} className="text-primary" />
                             Invoice Summary
                         </h2>
-                        
+
                         <div className="bg-background border-[1.5px] border-border p-6 text-center space-y-4 mb-6 neo-shadow-sm">
                             <div>
                                 <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/50 mb-1">Recovered Value</p>
@@ -634,7 +633,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                                 </div>
                                 <div>
                                     <h3 className="text-[18px] font-serif font-bold italic text-foreground leading-none mb-1">Log Client Request</h3>
-                                    <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/50">Gemini Scope Analysis</p>
+                                    <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/50">Groq Scope Analysis</p>
                                 </div>
                             </div>
                             <button
@@ -708,7 +707,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                                     disabled={isAnalyzingReq}
                                     className="px-6 py-3 bg-[#9b87f5] text-white border-[1.5px] border-border font-bold text-[12px] uppercase tracking-widest hover:bg-[#8b75f0] neo-shadow hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2 disabled:opacity-50"
                                 >
-                                    {isAnalyzingReq ? <Loader2 className="animate-spin" size={16} /> : <Wand2 size={16} />} 
+                                    {isAnalyzingReq ? <Loader2 className="animate-spin" size={16} /> : <Wand2 size={16} />}
                                     {isAnalyzingReq ? "ANALYZING..." : "ANALYZE REQUEST"}
                                 </button>
                             </div>

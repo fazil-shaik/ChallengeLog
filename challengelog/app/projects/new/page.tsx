@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, ChevronRight, ChevronLeft, Check, FileText, IndianRupee } from "lucide-react";
+import { Upload, ChevronRight, ChevronLeft, Check, FileText, DollarSign } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { toast } from "sonner";
 

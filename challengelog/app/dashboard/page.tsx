@@ -4,7 +4,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Briefcase, Clock, CheckCircle2, CircleDashed, Users, FileText, IndianRupee, Settings } from "lucide-react";
+import { Plus, Briefcase, Clock, CheckCircle2, CircleDashed, Users, FileText, DollarSign, Settings } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -183,7 +183,8 @@ export default function Dashboard() {
                                     <div>
                                         <p className="text-[10px] font-bold text-foreground/50 uppercase tracking-widest mb-1.5">VALUE</p>
                                         <p className="text-[20px] font-serif font-bold text-foreground leading-none flex items-center">
-                                            ${Number(project.originalValue).toLocaleString()}
+                                            <DollarSign size={18} className="text-foreground/40 mr-0.5" />
+                                            {Number(project.originalValue).toLocaleString()}
                                         </p>
                                     </div>
                                     <div>

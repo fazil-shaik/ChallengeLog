@@ -205,11 +205,22 @@ export default function SettingsPage() {
                                                     </div>
                                                 )}
                                                 <div>
-                                                    <button type="button" onClick={() => ikUploadRef.current?.click()} className="px-4 py-2 border-2 border-border text-[12px] font-bold uppercase tracking-widest hover:bg-primary/5 transition-colors flex items-center gap-2" disabled={isUploading}>
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => user?.plan !== 'free' ? ikUploadRef.current?.click() : toast.error("Custom logo is a Pro feature. Please upgrade to use it.")} 
+                                                        className={`px-4 py-2 border-2 border-border text-[12px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 ${user?.plan === 'free' ? 'opacity-50 cursor-not-allowed bg-muted' : 'hover:bg-primary/5'}`} 
+                                                        disabled={isUploading || user?.plan === 'free'}
+                                                    >
                                                         {isUploading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
-                                                        {isUploading ? "UPLOADING..." : "UPLOAD NEW LOGO"}
+                                                        {isUploading ? "UPLOADING..." : user?.plan === 'free' ? "PRO FEATURE" : "UPLOAD NEW LOGO"}
                                                     </button>
-                                                    <p className="text-[12px] text-foreground/50 mt-2">Recommended: 256x256px PNG or JPG</p>
+                                                    {user?.plan === 'free' ? (
+                                                        <p className="text-[12px] text-primary font-bold mt-2 uppercase tracking-wide">
+                                                            <Link href="/settings/billing" className="hover:underline">Upgrade to Pro for custom branding</Link>
+                                                        </p>
+                                                    ) : (
+                                                        <p className="text-[12px] text-foreground/50 mt-2">Recommended: 256x256px PNG or JPG</p>
+                                                    )}
                                                 </div>
                                                 
                                                 {/* Hidden IKUpload */}

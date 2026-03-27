@@ -59,7 +59,7 @@ export default async function ApproveChangeOrderPage({
       <div className="bg-background border-b-2 border-border px-6 py-6 sticky top-0 z-20">
         <div className="max-w-[800px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {designer.logoUrl ? (
+            {designer.logoUrl && designer.plan !== 'free' ? (
               <img src={designer.logoUrl} alt={designer.name || 'Designer Logo'} className="w-12 h-12 rounded border-2 border-border object-cover neo-shadow-sm" />
             ) : (
               <div className="w-12 h-12 bg-primary text-background flex items-center justify-center font-bold text-xl border-2 border-border neo-shadow-sm">
@@ -93,7 +93,7 @@ export default async function ApproveChangeOrderPage({
 
         <div className="bg-card border-2 border-border neo-shadow p-8 relative">
           <div className="absolute top-[-2px] right-[-2px] w-8 h-8 border-t-[4px] border-r-[4px] border-primary z-10 pointer-events-none"></div>
-          
+
           <h3 className="text-[20px] font-serif font-bold flex items-center gap-3 mb-6">
             <div className="w-3 h-3 bg-secondary border-[1.5px] border-border"></div>
             Scope Details

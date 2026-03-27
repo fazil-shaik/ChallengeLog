@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, react/no-unescaped-entities, @typescript-eslint/no-unused-vars, @next/next/no-img-element */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../db";
-import { changeRequests, auditEvents, projects } from "@/app/(Schema)/schema";
+import { changeRequests, auditEvents, projects, users } from "@/app/(Schema)/schema";
 import { eq } from "drizzle-orm";
 
 
@@ -37,6 +37,23 @@ export async function POST(req: NextRequest) {
     let aiInScope = false;
     let aiReasoning = null;
 
+    // Fetch the user's plan to differentiate AI models
+    const projectData = await db.query.projects.findFirst({
+      where: eq(projects.id, projectId),
+    });
+
+    let userPlan = 'free';
+    if (projectData?.userId) {
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, projectData.userId),
+        columns: { plan: true }
+      });
+      userPlan = user?.plan || 'free';
+    }
+
+    const isPro = userPlan === 'pro' || userPlan === 'studio';
+    const model = isPro ? "llama-3.3-70b-versatile" : "llama-3.1-8b-instant";
+
     try {
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -45,7 +62,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: model,
           messages: [
             {
               role: "system",
@@ -75,7 +92,7 @@ export async function POST(req: NextRequest) {
                 - "hours": (number) Estimated hours to complete.
                 - "cost": (number) Estimated cost based on typical $100/hr consultant rate.
                 - "inScope": (boolean) Whether the request is within the original scope.
-                - "reasoning": (string) Short explanation (1-2 sentences max) for your scope decision.
+                - "reasoning": (string) ${isPro ? "Detailed explanation (1-2 sentences max) for your scope decision." : "A very brief status (e.g. 'Out of scope' or 'In scope'). Reasoning is only available on Pro plans."}
               `
             }
           ],
@@ -89,11 +106,11 @@ export async function POST(req: NextRequest) {
 
       const result = await response.json();
       const parsed = JSON.parse(result.choices[0].message.content);
-      
+
       aiHours = Number(parsed.hours) || 0;
       aiCost = Number(parsed.cost) || 0;
       if (typeof parsed.inScope === "boolean") {
-          aiInScope = parsed.inScope;
+        aiInScope = parsed.inScope;
       }
       aiReasoning = parsed.reasoning || "";
     } catch (aiError) {

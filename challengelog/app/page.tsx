@@ -358,7 +358,7 @@ export default async function Home() {
                     <span className="text-[14px] font-bold text-foreground/50 uppercase">/MONTH</span>
                   </div>
                   <ul className="space-y-4 mb-10">
-                    {['5 active projects', 'Basic scope tracking', 'Standard email support'].map((f, i) => (
+                    {['2 active projects', 'Basic scope tracking', 'Standard email support'].map((f, i) => (
                       <li key={i} className="flex items-center gap-3">
                         <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                         <span className="text-[14px] text-foreground/80 font-medium">{f}</span>

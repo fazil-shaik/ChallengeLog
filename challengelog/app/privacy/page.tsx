@@ -21,7 +21,7 @@ export default function PrivacyPage() {
               <section>
                 <h2 className="text-[20px] font-bold text-foreground uppercase tracking-wider mb-4">1. Introduction</h2>
                 <p className="text-foreground/80 leading-relaxed">
-                  We value your privacy. This Privacy Policy explains how ChangeLog ("we," "us," or "our") collects, uses, and protects your information when you use our website and services.
+                  We value your privacy. This Privacy Policy explains how ChangeLog (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) collects, uses, and protects your information when you use our website and services.
                 </p>
               </section>
 

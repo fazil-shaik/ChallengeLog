@@ -35,7 +35,7 @@ export default function TermsPage() {
               <section>
                 <h2 className="text-[20px] font-bold text-foreground uppercase tracking-wider mb-4">3. Accuracy of Analysis</h2>
                 <p className="text-foreground/80 leading-relaxed p-6 bg-secondary/5 border-l-4 border-secondary font-medium italic">
-                  ChangeLog's AI-powered scope detection is an assistive tool. While we strive for 100% accuracy, the final responsibility for contract interpretation and client billing lies with the user.
+                  ChangeLog&apos;s AI-powered scope detection is an assistive tool. While we strive for 100% accuracy, the final responsibility for contract interpretation and client billing lies with the user.
                 </p>
               </section>
 

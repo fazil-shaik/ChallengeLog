@@ -23,7 +23,7 @@ export default function RefundsPage() {
               </p>
               <div className="p-6 bg-muted/30 border-l-4 border-primary mb-8">
                 <p className="text-[24px] md:text-[32px] font-serif italic text-foreground leading-relaxed">
-                  "No refunds and cancellations"
+                  &quot;No refunds and cancellations&quot;
                 </p>
               </div>
               <p className="text-foreground/80 leading-relaxed text-[16px]">

@@ -161,3 +161,10 @@ export const subscriptions = pgTable('subscriptions', {
   currentPeriodEnd: timestamp('current_period_end'),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+// ── WAITLIST ─────────────────────────────────────
+export const waitlist = pgTable('waitlist', {
+  id: text('id').primaryKey().$defaultFn(createId),
+  email: text('email').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow(),
+});

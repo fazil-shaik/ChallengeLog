@@ -46,23 +46,15 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    <div>
-                        <h4 className="font-bold text-[14px] uppercase tracking-widest text-foreground mb-6">Company</h4>
-                        <ul className="space-y-4 font-bold text-[14px]">
-                            <li><Link href="#" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">About</Link></li>
-                            <li><Link href="#" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Blog</Link></li>
-                            <li><Link href="#" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Careers</Link></li>
-                            <li><Link href="#" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Contact</Link></li>
-                        </ul>
-                    </div>
 
                     <div>
                         <h4 className="font-bold text-[14px] uppercase tracking-widest text-foreground mb-6">Resources</h4>
                         <ul className="space-y-4 font-bold text-[14px]">
-                            <li><Link href="#" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Help Center</Link></li>
-                            <li><Link href="#" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">API Docs</Link></li>
-                            <li><Link href="#" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Terms</Link></li>
-                            <li><Link href="#" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Privacy</Link></li>
+                            <li><Link href="/help" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Help Center</Link></li>
+                            <li><Link href="/terms" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Terms</Link></li>
+                            <li><Link href="/privacy" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Privacy</Link></li>
+                            <li><Link href="/refunds" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Refunds</Link></li>
+                            <li><Link href="/contact" className="text-foreground/70 hover:text-primary transition-colors uppercase tracking-wider">Contact</Link></li>
                         </ul>
                     </div>
                 </div>
@@ -86,9 +78,9 @@ export default function Footer() {
                     <div className="flex flex-col md:flex-row items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-foreground/60 mt-6 md:mt-0">
                         <span>© 2026 CHANGELOG. ALL RIGHTS RESERVED.</span>
                         <div className="hidden md:flex gap-6">
-                            <Link href="#" className="hover:text-primary transition-colors">Terms</Link>
-                            <Link href="#" className="hover:text-primary transition-colors">Privacy</Link>
-                            <Link href="#" className="hover:text-primary transition-colors">Cookies</Link>
+                            <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
+                            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
+                            <Link href="/refunds" className="hover:text-primary transition-colors">Refunds</Link>
                         </div>
                     </div>
                 </div>

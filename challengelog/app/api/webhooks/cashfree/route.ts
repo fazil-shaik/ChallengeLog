@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
       // FALLBACK: In some dev environments, if keys don't match, verification might fail.
       // We will parse anyway for robustness IF it's not production.
-      if (process.env.NODE_ENV === "production") {
+      if (process.env.NEXT_PUBLIC_CASHFREE_MODE === "PRODUCTION") {
         return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
       }
       event = JSON.parse(rawBody);

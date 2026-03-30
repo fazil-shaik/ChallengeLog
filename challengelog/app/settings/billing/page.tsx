@@ -84,9 +84,11 @@ function BillingContent() {
 
             if (data.payment_session_id) {
                 // Initialize Cashfree-JS
+                const rawMode = process.env.NEXT_PUBLIC_CASHFREE_MODE?.replace(/^['"]|['"]$/g, "").trim();
+                const mode = rawMode === "PRODUCTION" ? "production" : "sandbox";
                 const { load } = await import("@cashfreepayments/cashfree-js");
                 const cashfree = await load({
-                    mode: process.env.NODE_ENV === "production" ? "production" : "sandbox"
+                    mode: mode
                 });
 
                 // Trigger Checkout

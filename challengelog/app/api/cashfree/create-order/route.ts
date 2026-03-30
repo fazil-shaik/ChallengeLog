@@ -29,6 +29,15 @@ export async function POST(req: Request) {
     // Amount for PRO plan in INR (roughly $49)
     const amount = 4500.00;
 
+    // Determine Base URL (Production requires HTTPS)
+    const mode = process.env.NEXT_PUBLIC_CASHFREE_MODE?.replace(/^['"]|['"]$/g, "").trim();
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL || new URL(req.url).origin;
+
+    // Force HTTPS for production mode if it's not already
+    if (mode === "PRODUCTION" && baseUrl.startsWith("http://")) {
+      baseUrl = baseUrl.replace("http://", "https://");
+    }
+
     const request = {
       order_amount: amount,
       order_currency: "INR",
@@ -41,8 +50,8 @@ export async function POST(req: Request) {
       },
       order_meta: {
         // Redirect back to billing with success/failure flags
-        return_url: `${new URL(req.url).origin}/settings/billing?order_id={order_id}`,
-        notify_url: `${new URL(req.url).origin}/api/webhooks/cashfree`,
+        return_url: `${baseUrl}/settings/billing?order_id={order_id}`,
+        notify_url: `${baseUrl}/api/webhooks/cashfree`,
       },
       order_note: `Upgrade to ${planId || 'pro'} plan`,
     };

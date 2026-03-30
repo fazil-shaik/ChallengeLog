@@ -22,7 +22,7 @@ export const ChangeOrderDiscussEmail = ({
   designerName = "Designer",
   clientName = "Client",
   projectName = "Your Project",
-  orderLink = "http://localhost:3000/dashboard",
+  orderLink = "#",
 }: ChangeOrderDiscussEmailProps) => {
   return (
     <Html>

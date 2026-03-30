@@ -24,7 +24,7 @@ export const ChangeOrderApprovedEmail = ({
   clientName = "Client",
   projectName = "Your Project",
   cost = "0.00",
-  orderLink = "http://localhost:3000/dashboard",
+  orderLink = "#",
 }: ChangeOrderApprovedEmailProps) => {
   return (
     <Html>

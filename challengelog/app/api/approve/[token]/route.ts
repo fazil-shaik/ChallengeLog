@@ -79,7 +79,7 @@ export async function POST(
 
     // Send email to designer
     if (designer.email) {
-      const origin = req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const origin = req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL;
       const orderLink = `${origin}/projects/${project.id}/orders/${order.id}`;
 
       const emailRes = await resend.emails.send({

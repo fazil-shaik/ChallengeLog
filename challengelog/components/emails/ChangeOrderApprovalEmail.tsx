@@ -22,7 +22,7 @@ interface ChangeOrderApprovalEmailProps {
   approvalLink: string;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
 
 export const ChangeOrderApprovalEmail = ({
   designerName = "Your Designer",
@@ -30,7 +30,7 @@ export const ChangeOrderApprovalEmail = ({
   projectName = "Your Project",
   changeDescription = "A new change request has been estimated.",
   cost = "0.00",
-  approvalLink = "http://localhost:3000/orders/approve",
+  approvalLink = "#",
 }: ChangeOrderApprovalEmailProps) => {
   return (
     <Html>

@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     });
 
     // 4. Send Email directly using Resend
-    const origin = req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const origin = req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL;
     const approvalLink = `${origin}/approve/${approvalToken}`;
 
     try {

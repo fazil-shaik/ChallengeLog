@@ -20,43 +20,82 @@ function BillingContent() {
     useEffect(() => {
         if (searchParams?.get("mock_success") === "true") {
             toast.success("Successfully upgraded to Pro! (Mock)");
-            // We should reload user data, simulated here
         }
 
         async function loadProfile() {
             try {
+                const orderId = searchParams?.get("order_id");
+
+                // Proactively verify order if returning from Cashfree
+                if (orderId) {
+                    await fetch("/api/cashfree/verify-order", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ orderId })
+                    });
+                }
+
                 const userRes = await fetch("/api/users/me");
                 if (userRes.ok) {
                     const userData = await userRes.json();
                     setUser(userData);
+                    return userData;
                 }
             } catch (err) {
                 console.error("Failed to load user profile", err);
             } finally {
                 setIsLoading(false);
             }
+            return null;
         }
+
         if (session) {
             loadProfile();
+
+            // Polling for upgrade status if order_id is present
+            const orderId = searchParams?.get("order_id");
+            if (orderId) {
+                let attempts = 0;
+                const interval = setInterval(async () => {
+                    attempts++;
+                    const updatedUser = await loadProfile();
+                    if (updatedUser?.plan === "pro") {
+                        toast.success("Welcome to Pro Plan!");
+                        clearInterval(interval);
+                    }
+                    if (attempts > 10) clearInterval(interval); // Stop after 30s
+                }, 3000);
+                return () => clearInterval(interval);
+            }
         }
     }, [session, searchParams]);
 
     const handleUpgrade = async () => {
         setIsUpgrading(true);
         try {
-            const res = await fetch("/api/cashfree/create-subscription", {
+            const res = await fetch("/api/cashfree/create-order", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ planId: "PRO_MONTHLY" })
+                body: JSON.stringify({ planId: "pro" })
             });
             const data = await res.json();
 
             if (data.error) throw new Error(data.error);
 
-            if (data.checkoutUrl) {
-                window.location.href = data.checkoutUrl;
+            if (data.payment_session_id) {
+                // Initialize Cashfree-JS
+                const { load } = await import("@cashfreepayments/cashfree-js");
+                const cashfree = await load({
+                    mode: process.env.NODE_ENV === "production" ? "production" : "sandbox"
+                });
+
+                // Trigger Checkout
+                await cashfree.checkout({
+                    paymentSessionId: data.payment_session_id,
+                    redirectTarget: "_self", // Or "_modal"
+                });
             } else {
-                toast.error("Checkout URL not found");
+                toast.error("Payment Session ID not found");
             }
         } catch (error: any) {
             console.error(error);

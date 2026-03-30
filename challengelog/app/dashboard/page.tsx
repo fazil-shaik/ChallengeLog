@@ -84,9 +84,16 @@ export default function Dashboard() {
                             </h1>
                         </div>
                         {user && (
-                            <p className="text-foreground/60 font-medium text-[15px]">
-                                {user.email} • {user.plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
-                            </p>
+                            <div className="flex flex-col gap-1">
+                                <p className="text-foreground/60 font-medium text-[15px]">
+                                    {user.email} • {user.plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
+                                </p>
+                                {user.plan === 'pro' && user.subscription?.currentPeriodEnd && (
+                                    <p className="text-primary font-bold text-[12px] uppercase tracking-wider">
+                                        Pro expires on: {new Date(user.subscription.currentPeriodEnd).toLocaleDateString()}
+                                    </p>
+                                )}
+                            </div>
                         )}
                     </div>
                     <div className="flex items-center flex-wrap md:flex-nowrap gap-4">
@@ -103,12 +110,21 @@ export default function Dashboard() {
                         >
                             LOG OUT
                         </button>
-                        <Link
-                            href="/projects/new"
-                            className="flex items-center gap-2 px-6 py-3.5 bg-primary text-background text-[13px] font-bold tracking-widest uppercase hover:bg-primary-hover transition-colors neo-shadow-sm border-2 border-border hover:-translate-y-0.5 active:translate-y-0"
-                        >
-                            <Plus size={16} strokeWidth={3} /> NEW PROJECT
-                        </Link>
+                        {user?.plan === 'free' && projects.length >= 2 ? (
+                            <Link
+                                href="/settings/billing"
+                                className="flex items-center gap-2 px-6 py-3.5 bg-secondary text-background text-[13px] font-bold tracking-widest uppercase hover:bg-secondary/90 transition-colors neo-shadow-sm border-2 border-border hover:-translate-y-0.5 active:translate-y-0"
+                            >
+                                UPGRADE TO PRO
+                            </Link>
+                        ) : (
+                            <Link
+                                href="/projects/new"
+                                className="flex items-center gap-2 px-6 py-3.5 bg-primary text-background text-[13px] font-bold tracking-widest uppercase hover:bg-primary-hover transition-colors neo-shadow-sm border-2 border-border hover:-translate-y-0.5 active:translate-y-0"
+                            >
+                                <Plus size={16} strokeWidth={3} /> NEW PROJECT
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>

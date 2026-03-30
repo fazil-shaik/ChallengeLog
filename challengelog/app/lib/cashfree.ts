@@ -1,8 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Cashfree } from "cashfree-pg";
+import { Cashfree, CFEnvironment } from "cashfree-pg";
 
-(Cashfree as any).XClientId = process.env.CASHFREE_CLIENT_ID || "TEST100XXXX";
-(Cashfree as any).XClientSecret = process.env.CASHFREE_CLIENT_SECRET || "TESTXXXXXX";
-(Cashfree as any).XEnvironment = process.env.NODE_ENV === "production" ? "PRODUCTION" : "SANDBOX";
+const cashfree = new Cashfree(
+  process.env.NODE_ENV === "production"
+    ? CFEnvironment.PRODUCTION
+    : CFEnvironment.SANDBOX,
+  process.env.CASHFREE_CLIENT_ID,
+  process.env.CASHFREE_CLIENT_SECRET
+);
 
-export default Cashfree;
+export default cashfree;

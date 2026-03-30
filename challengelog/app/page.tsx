@@ -391,8 +391,8 @@ export default async function Home() {
                     ))}
                   </ul>
                 </div>
-                <Link href="/signup" className="flex justify-center items-center w-full py-4 bg-primary text-background border-2 border-border text-[14px] font-bold hover:bg-primary-hover transition-colors uppercase tracking-widest neo-shadow-sm">
-                  START SOLO PRO
+                <Link href={session ? "/settings/billing" : "/signup"} className="flex justify-center items-center w-full py-4 bg-primary text-background border-2 border-border text-[14px] font-bold hover:bg-primary-hover transition-colors uppercase tracking-widest neo-shadow-sm">
+                  {session ? "UPGRADE NOW" : "START SOLO PRO"}
                 </Link>
               </div>
             </div>

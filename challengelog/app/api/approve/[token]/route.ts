@@ -4,6 +4,7 @@ import { changeOrders, auditEvents, changeRequests, projects, users } from "@/ap
 import { eq } from "drizzle-orm";
 import { Resend } from "resend";
 import { ChangeOrderApprovedEmail } from "@/components/emails/ChangeOrderApprovedEmail";
+import { ChangeOrderClientConfirmedEmail } from "@/components/emails/ChangeOrderClientConfirmedEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy");
 
@@ -96,7 +97,30 @@ export async function POST(
       });
 
       if (emailRes.error) {
-        console.error("Failed to send approval confirmation email (Resend API Error):", emailRes.error);
+        console.error("Failed to send approval confirmation email to designer (Resend API Error):", emailRes.error);
+      }
+    }
+
+    // Send email to client
+    if (project.clientEmail) {
+      const origin = req.url ? new URL(req.url).origin : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const orderLink = `${origin}/approve/${token}`; // Token link still works for viewing, or we can use a direct details link if we had one
+
+      const clientEmailRes = await resend.emails.send({
+        from: '"ChangeLog" <hello@contact.shorty-url.online>',
+        to: [project.clientEmail],
+        subject: `Confirmation: Change Order Approved for ${project.clientName}`,
+        react: ChangeOrderClientConfirmedEmail({
+          designerName: designer.name || 'Designer',
+          clientName: project.clientName || 'Client',
+          projectName: project.clientName || 'Project',
+          cost: order.cost?.toString() || "0.00",
+          orderLink,
+        }) as React.ReactElement,
+      });
+
+      if (clientEmailRes.error) {
+        console.error("Failed to send approval confirmation email to client (Resend API Error):", clientEmailRes.error);
       }
     }
 

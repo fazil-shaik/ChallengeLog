@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/app/db";
-import { changeOrders, changeRequests, projects, users } from "@/app/(Schema)/schema";
+import { changeOrders, changeRequests, projects, users, auditEvents } from "@/app/(Schema)/schema";
 import { eq } from "drizzle-orm";
 import { Resend } from "resend";
 import { ChangeOrderDiscussEmail } from "@/components/emails/ChangeOrderDiscussEmail";
@@ -68,8 +68,24 @@ export async function POST(
 
       if (emailRes.error) {
         console.error("Failed to send discussion request email (Resend API Error):", emailRes.error);
+        // We still consider the request logged if the DB part succeeded, 
+        // but it's good to know the email failed.
       }
     }
+
+    // Capture IP for audit
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+
+    // Log audit event
+    await db.insert(auditEvents).values({
+      projectId: project.id,
+      eventType: 'change_order_discussion_requested',
+      actor: 'client',
+      payload: JSON.stringify({
+        changeOrderId: order.id,
+        ip,
+      }),
+    });
 
     return NextResponse.json({ success: true, message: 'Discussion requested successfully' });
   } catch (error) {
